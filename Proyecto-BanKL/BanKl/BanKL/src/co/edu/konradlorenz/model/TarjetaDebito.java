@@ -22,24 +22,26 @@ public class TarjetaDebito extends Cuenta {
     }
 
     @Override
-    public void consignar(double valor) {
-        if (valor > 0) {
-            setSaldo(getSaldo() + valor);
-            alertas.add("Depósito en tarjeta débito: " + valor);
+    public boolean consignar(double valor) {
+
+        if (!aumentarSaldo(valor)) {
+            alertas.add("Error en depósito: valor inválido.");
+            return false;
         }
+
+        alertas.add("Depósito en tarjeta débito: " + valor);
+        return true;
     }
 
     @Override
     public boolean retirar(double valor) {
-        if (valor > 0 && valor <= getSaldo()) {
-            setSaldo(getSaldo() - valor);
-            alertas.add("Retiro en tarjeta débito: " + valor);
-            return true;
-        } else {
-            alertas.add("Intento de retiro fallido: fondos insuficientes o monto inválido.");
+
+        if (!disminuirSaldo(valor)) {
+            alertas.add("Error en retiro: fondos insuficientes o valor inválido.");
             return false;
         }
+
+        alertas.add("Retiro en tarjeta débito: " + valor);
+        return true;
     }
 }
-
-

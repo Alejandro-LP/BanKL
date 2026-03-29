@@ -1,6 +1,7 @@
 package co.edu.konradlorenz.model;
 
 public class Cuenta {
+
     private int numeroCuenta;
     private String propietario;
     private double saldo;
@@ -13,7 +14,7 @@ public class Cuenta {
     public Cuenta(int numeroCuenta, String propietario, double saldo, String numeroTarjeta, String fechaExpiracion, int cvv) {
         this.numeroCuenta = numeroCuenta;
         this.propietario = propietario;
-        this.saldo = saldo;
+        this.saldo = saldo >= 0 ? saldo : 0;
         this.numeroTarjeta = numeroTarjeta;
         this.fechaExpiracion = fechaExpiracion;
         this.cvv = cvv;
@@ -37,10 +38,6 @@ public class Cuenta {
 
     public double getSaldo() {
         return saldo;
-    }
-
-    public void setSaldo(double saldo) {
-        this.saldo = saldo;
     }
 
     public String getNumeroTarjeta() {
@@ -67,16 +64,35 @@ public class Cuenta {
         this.cvv = cvv;
     }
 
-    public void consignar(double valor) {
+    //MÉTODOS PROTEGIDOS
+
+    protected boolean aumentarSaldo(double valor) {
+        if (valor <= 0) return false;
         saldo += valor;
+        return true;
+    }
+
+    protected boolean disminuirSaldo(double valor) {
+        if (valor <= 0 || valor > saldo) return false;
+        saldo -= valor;
+        return true;
+    }
+
+    // ✅ MÉTODOS PÚBLICOS
+
+    public boolean consignar(double valor) {
+        return aumentarSaldo(valor);
     }
 
     public boolean retirar(double valor) {
-        if (valor > 0 && valor <= saldo) {
-            saldo -= valor;
-            return true;
+        return disminuirSaldo(valor);
+    }
+
+    public String getNumeroTarjetaOculta() {
+        if (numeroTarjeta == null || numeroTarjeta.length() < 4) {
+            return "****";
         }
-        return false;
+        return "**** **** **** " + numeroTarjeta.substring(numeroTarjeta.length() - 4);
     }
 
     @Override
@@ -85,9 +101,8 @@ public class Cuenta {
                 "numeroCuenta=" + numeroCuenta +
                 ", propietario='" + propietario + '\'' +
                 ", saldo=" + saldo +
-                ", numeroTarjeta='" + numeroTarjeta + '\'' +
+                ", numeroTarjeta='" + getNumeroTarjetaOculta() + '\'' +
                 ", fechaExpiracion='" + fechaExpiracion + '\'' +
-                ", cvv=" + cvv +
                 '}';
     }
-} 
+}
