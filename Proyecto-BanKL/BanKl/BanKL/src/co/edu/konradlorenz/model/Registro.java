@@ -4,44 +4,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Registro {
-    private List<ClienteNatural> clientes;
-    private ClienteNatural clienteAutenticado;
-    private AlertasBancarias alertas = new AlertasBancarias();
 
+    private List<Cliente> clientes;
+
+   
     public Registro() {
-        clientes = new ArrayList<>();
+        this.clientes = new ArrayList<>();
     }
 
-    public List<ClienteNatural> getClientes() {
-        return clientes;
+    public void agregarCliente(Cliente cliente) {
+        if (cliente != null) {
+            clientes.add(cliente);
+        }
     }
 
-    public void setClientes(List<ClienteNatural> clientes) {
-        this.clientes = clientes;
-    }
+  
+    public Cliente buscarPorId(String id) {
+        if (id == null) return null;
 
-    public void agregarCliente(ClienteNatural cliente) {
-        clientes.add(cliente);
-    }
-
-    public ClienteNatural buscarClientePorDocumento(String documento) {
-        for (ClienteNatural c : clientes) {
-            if (c.getId().equals(documento)) {
+        for (Cliente c : clientes) {
+            if (id.equals(c.getId())) {
                 return c;
             }
         }
         return null;
     }
 
-    public void setClienteAutenticado(ClienteNatural cliente) {
-        this.clienteAutenticado = cliente;
-    }
-
-    public ClienteNatural getClienteAutenticado() {
-        return clienteAutenticado;
-    }
-
-    public AlertasBancarias getAlertas() {
-        return alertas;
+    
+    public List<Cliente> getClientes() {
+        return new ArrayList<>(clientes); 
     }
 }

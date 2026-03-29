@@ -8,63 +8,26 @@ public class Cuenta {
     private String numeroTarjeta;
     private String fechaExpiracion;
     private int cvv;
+    private boolean bloqueada;
 
     public Cuenta() {}
 
-    public Cuenta(int numeroCuenta, String propietario, double saldo, String numeroTarjeta, String fechaExpiracion, int cvv) {
+    public Cuenta(int numeroCuenta, String propietario, double saldo,
+                  String numeroTarjeta, String fechaExpiracion, int cvv) {
+
         this.numeroCuenta = numeroCuenta;
         this.propietario = propietario;
         this.saldo = saldo >= 0 ? saldo : 0;
         this.numeroTarjeta = numeroTarjeta;
         this.fechaExpiracion = fechaExpiracion;
         this.cvv = cvv;
+        this.bloqueada = false;
     }
 
-    public int getNumeroCuenta() {
-        return numeroCuenta;
-    }
-
-    public void setNumeroCuenta(int numeroCuenta) {
-        this.numeroCuenta = numeroCuenta;
-    }
-
-    public String getPropietario() {
-        return propietario;
-    }
-
-    public void setPropietario(String propietario) {
-        this.propietario = propietario;
-    }
-
-    public double getSaldo() {
-        return saldo;
-    }
-
-    public String getNumeroTarjeta() {
-        return numeroTarjeta;
-    }
-
-    public void setNumeroTarjeta(String numeroTarjeta) {
-        this.numeroTarjeta = numeroTarjeta;
-    }
-
-    public String getFechaExpiracion() {
-        return fechaExpiracion;
-    }
-
-    public void setFechaExpiracion(String fechaExpiracion) {
-        this.fechaExpiracion = fechaExpiracion;
-    }
-
-    public int getCvv() {
-        return cvv;
-    }
-
-    public void setCvv(int cvv) {
-        this.cvv = cvv;
-    }
-
-    //MÉTODOS PROTEGIDOS
+    public double getSaldo() { return saldo; }
+    public String getNumeroTarjeta() { return numeroTarjeta; }
+    public String getFechaExpiracion() { return fechaExpiracion; }
+    public boolean isBloqueada() { return bloqueada; }
 
     protected boolean aumentarSaldo(double valor) {
         if (valor <= 0) return false;
@@ -78,31 +41,85 @@ public class Cuenta {
         return true;
     }
 
-    // ✅ MÉTODOS PÚBLICOS
+    public void bloquearTarjeta() {
+        this.bloqueada = true;
+        registrarAlerta("Tarjeta bloqueada");
+    }
+
+    public void regenerarTarjeta() {
+
+        String anterior = this.numeroTarjeta;
+
+        this.numeroTarjeta = generarNumeroTarjeta();
+        this.fechaExpiracion = generarFechaExpiracion();
+        this.cvv = generarCVV();
+        this.bloqueada = false;
+
+        registrarAlerta("Tarjeta regenerada. Terminaba en "
+                + anterior.substring(anterior.length() - 4));
+    }
 
     public boolean consignar(double valor) {
+        if (bloqueada) return false;
         return aumentarSaldo(valor);
     }
 
     public boolean retirar(double valor) {
+        if (bloqueada) return false;
         return disminuirSaldo(valor);
     }
 
-    public String getNumeroTarjetaOculta() {
-        if (numeroTarjeta == null || numeroTarjeta.length() < 4) {
-            return "****";
+    // 🔔 método para que las hijas manejen alertas
+    protected void registrarAlerta(String mensaje) {}
+
+    // ======================
+    // 🔧 GENERADORES
+    // ======================
+
+    private String generarNumeroTarjeta() {
+
+        String[] bins = {"51", "52", "53", "54", "55"};
+        String bin = bins[(int)(Math.random() * bins.length)];
+
+        StringBuilder numero = new StringBuilder(bin);
+
+        while (numero.length() < 15) {
+            numero.append((int)(Math.random() * 10));
         }
-        return "**** **** **** " + numeroTarjeta.substring(numeroTarjeta.length() - 4);
+
+        numero.append(calcularLuhn(numero.toString()));
+
+        return numero.toString();
     }
 
-    @Override
-    public String toString() {
-        return "Cuenta{" +
-                "numeroCuenta=" + numeroCuenta +
-                ", propietario='" + propietario + '\'' +
-                ", saldo=" + saldo +
-                ", numeroTarjeta='" + getNumeroTarjetaOculta() + '\'' +
-                ", fechaExpiracion='" + fechaExpiracion + '\'' +
-                '}';
+    private int calcularLuhn(String numero) {
+
+        int suma = 0;
+        boolean duplicar = true;
+
+        for (int i = numero.length() - 1; i >= 0; i--) {
+
+            int digito = Character.getNumericValue(numero.charAt(i));
+
+            if (duplicar) {
+                digito *= 2;
+                if (digito > 9) digito -= 9;
+            }
+
+            suma += digito;
+            duplicar = !duplicar;
+        }
+
+        return (10 - (suma % 10)) % 10;
+    }
+
+    private int generarCVV() {
+        return (int)(Math.random() * 900) + 100;
+    }
+
+    private String generarFechaExpiracion() {
+        int mes = (int)(Math.random() * 12) + 1;
+        int anio = (int)(Math.random() * 5) + 26;
+        return String.format("%02d/%02d", mes, anio);
     }
 }
