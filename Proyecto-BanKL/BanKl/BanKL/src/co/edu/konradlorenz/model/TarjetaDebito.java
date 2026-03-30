@@ -5,7 +5,7 @@ import java.util.List;
 
 public class TarjetaDebito extends Cuenta {
 
-    private List<String> alertas = new ArrayList<>();
+    private AlertasBancarias alertas = new AlertasBancarias();
 
     public TarjetaDebito() {}
 
@@ -19,16 +19,17 @@ public class TarjetaDebito extends Cuenta {
     public boolean consignar(double valor) {
 
         if (isBloqueada()) {
-            alertas.add("Tarjeta bloqueada");
+            registrarAlerta("ERROR", "Tarjeta bloqueada");
             return false;
         }
 
         if (!aumentarSaldo(valor)) {
-            alertas.add("Error en depósito");
+            registrarAlerta("ERROR", "Error en depósito");
             return false;
         }
 
-        alertas.add("Depósito: " + valor);
+        registrarTransaccion("DEPOSITO", valor);
+        registrarAlerta("TRANSACCION", "Depósito: " + valor);
         return true;
     }
 
@@ -36,25 +37,26 @@ public class TarjetaDebito extends Cuenta {
     public boolean retirar(double valor) {
 
         if (isBloqueada()) {
-            alertas.add("Tarjeta bloqueada");
+            registrarAlerta("ERROR", "Tarjeta bloqueada");
             return false;
         }
 
         if (!disminuirSaldo(valor)) {
-            alertas.add("Error en retiro");
+            registrarAlerta("ERROR", "Error en retiro");
             return false;
         }
 
-        alertas.add("Retiro: " + valor);
+        registrarTransaccion("RETIRO", valor);
+        registrarAlerta("TRANSACCION", "Retiro: " + valor);
         return true;
     }
 
     @Override
-    protected void registrarAlerta(String mensaje) {
-        alertas.add(mensaje);
+    protected void registrarAlerta(String tipo, String descripcion) {
+        alertas.registrarAlerta(tipo, descripcion);
     }
 
-    public List<String> getAlertas() {
-        return new ArrayList<>(alertas);
+    public List<Alerta> getAlertas() {
+        return alertas.revisarAlertas();
     }
 }

@@ -1,0 +1,110 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* VARIABLES */
+:root {
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --text: #1a1a1a;
+    --primary: #001f4e;
+    --secondary: #6c8fc7;
+}
+
+/* 🌙 MODO OSCURO */
+.dark {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --text: #e2e8f0;
+    --primary: #3b82f6;
+    --secondary: #94a3b8;
+}
+
+/* BODY */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* CONTENEDOR */
+.container {
+    text-align: center;
+}
+
+/* LOGO */
+.logo {
+    font-size: 36px;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+.logo span {
+    color: var(--secondary);
+}
+
+/* SUBTEXTO */
+.subtitle {
+    margin-bottom: 20px;
+    color: gray;
+}
+
+/* CARD LOGIN */
+.card {
+    background: var(--card);
+    padding: 30px;
+    border-radius: 15px;
+    width: 300px;
+    box-shadow: 0px 10px 25px rgba(0,0,0,0.1);
+}
+
+/* INPUTS */
+.card input {
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+/* BOTÓN */
+.card button {
+    width: 100%;
+    padding: 10px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.card button:hover {
+    background: #003080;
+}
+
+/* LINK */
+.link {
+    margin-top: 10px;
+    display: block;
+    color: var(--secondary);
+    text-decoration: none;
+}
+
+/* BOTÓN DARK MODE */
+.toggle-dark {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    background: var(--card);
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+}

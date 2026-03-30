@@ -1,5 +1,8 @@
 package co.edu.konradlorenz.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Cuenta {
 
     private int numeroCuenta;
@@ -10,6 +13,8 @@ public class Cuenta {
     private int cvv;
     private boolean bloqueada;
 
+    private List<Transaccion> historial = new ArrayList<>();
+
     public Cuenta() {}
 
     public Cuenta(int numeroCuenta, String propietario, double saldo,
@@ -17,7 +22,7 @@ public class Cuenta {
 
         this.numeroCuenta = numeroCuenta;
         this.propietario = propietario;
-        this.saldo = saldo >= 0 ? saldo : 0;
+        this.saldo = saldo;
         this.numeroTarjeta = numeroTarjeta;
         this.fechaExpiracion = fechaExpiracion;
         this.cvv = cvv;
@@ -28,6 +33,14 @@ public class Cuenta {
     public String getNumeroTarjeta() { return numeroTarjeta; }
     public String getFechaExpiracion() { return fechaExpiracion; }
     public boolean isBloqueada() { return bloqueada; }
+
+    public List<Transaccion> getHistorial() {
+        return new ArrayList<>(historial);
+    }
+
+    protected void registrarTransaccion(String tipo, double valor) {
+        historial.add(new Transaccion(tipo, valor));
+    }
 
     protected boolean aumentarSaldo(double valor) {
         if (valor <= 0) return false;
@@ -43,7 +56,7 @@ public class Cuenta {
 
     public void bloquearTarjeta() {
         this.bloqueada = true;
-        registrarAlerta("Tarjeta bloqueada");
+        registrarAlerta("SEGURIDAD", "Tarjeta bloqueada");
     }
 
     public void regenerarTarjeta() {
@@ -55,8 +68,9 @@ public class Cuenta {
         this.cvv = generarCVV();
         this.bloqueada = false;
 
-        registrarAlerta("Tarjeta regenerada. Terminaba en "
-                + anterior.substring(anterior.length() - 4));
+        registrarAlerta("TARJETA",
+                "Tarjeta regenerada. Terminaba en " +
+                anterior.substring(anterior.length() - 4));
     }
 
     public boolean consignar(double valor) {
@@ -69,36 +83,32 @@ public class Cuenta {
         return disminuirSaldo(valor);
     }
 
-    // 🔔 método para que las hijas manejen alertas
-    protected void registrarAlerta(String mensaje) {}
+    // 🔔 Se implementa en las tarjetas
+    protected void registrarAlerta(String tipo, String descripcion) {}
 
     // ======================
-    // 🔧 GENERADORES
+    // GENERADORES
     // ======================
 
     private String generarNumeroTarjeta() {
-
-        String[] bins = {"51", "52", "53", "54", "55"};
-        String bin = bins[(int)(Math.random() * bins.length)];
+        String[] bins = {"51","52","53","54","55"};
+        String bin = bins[(int)(Math.random()*bins.length)];
 
         StringBuilder numero = new StringBuilder(bin);
 
         while (numero.length() < 15) {
-            numero.append((int)(Math.random() * 10));
+            numero.append((int)(Math.random()*10));
         }
 
         numero.append(calcularLuhn(numero.toString()));
-
         return numero.toString();
     }
 
     private int calcularLuhn(String numero) {
-
         int suma = 0;
         boolean duplicar = true;
 
         for (int i = numero.length() - 1; i >= 0; i--) {
-
             int digito = Character.getNumericValue(numero.charAt(i));
 
             if (duplicar) {
@@ -114,12 +124,12 @@ public class Cuenta {
     }
 
     private int generarCVV() {
-        return (int)(Math.random() * 900) + 100;
+        return (int)(Math.random()*900)+100;
     }
 
     private String generarFechaExpiracion() {
-        int mes = (int)(Math.random() * 12) + 1;
-        int anio = (int)(Math.random() * 5) + 26;
+        int mes = (int)(Math.random()*12)+1;
+        int anio = (int)(Math.random()*5)+26;
         return String.format("%02d/%02d", mes, anio);
     }
 }

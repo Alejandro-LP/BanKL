@@ -1,12 +1,11 @@
 package co.edu.konradlorenz.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TarjetaCredito extends Cuenta {
 
     private double cupo;
-    private List<String> alertas = new ArrayList<>();
+    private AlertasBancarias alertas = new AlertasBancarias();
 
     public TarjetaCredito() {}
 
@@ -19,30 +18,28 @@ public class TarjetaCredito extends Cuenta {
 
     public double getCupo() { return cupo; }
 
-    public double disponible() {
-        return cupo + getSaldo();
-    }
-
     @Override
     public boolean consignar(double valor) {
 
         if (isBloqueada()) {
-            alertas.add("Tarjeta bloqueada");
+            registrarAlerta("ERROR", "Tarjeta bloqueada");
             return false;
         }
 
         if (valor <= 0) {
-            alertas.add("Valor inválido");
+            registrarAlerta("ERROR", "Valor inválido");
             return false;
         }
 
         if (!aumentarSaldo(valor)) {
-            alertas.add("Error en pago");
+            registrarAlerta("ERROR", "Error en pago");
             return false;
         }
 
         cupo += valor;
-        alertas.add("Pago realizado: " + valor);
+
+        registrarTransaccion("PAGO", valor);
+        registrarAlerta("TRANSACCION", "Pago: " + valor);
         return true;
     }
 
@@ -50,31 +47,33 @@ public class TarjetaCredito extends Cuenta {
     public boolean retirar(double valor) {
 
         if (isBloqueada()) {
-            alertas.add("Tarjeta bloqueada");
+            registrarAlerta("ERROR", "Tarjeta bloqueada");
             return false;
         }
 
         if (valor <= 0 || valor > cupo) {
-            alertas.add("Excede cupo");
+            registrarAlerta("ERROR", "Excede cupo");
             return false;
         }
 
         if (!disminuirSaldo(valor)) {
-            alertas.add("Error en avance");
+            registrarAlerta("ERROR", "Error en avance");
             return false;
         }
 
         cupo -= valor;
-        alertas.add("Avance: " + valor);
+
+        registrarTransaccion("AVANCE", valor);
+        registrarAlerta("TRANSACCION", "Avance: " + valor);
         return true;
     }
 
     @Override
-    protected void registrarAlerta(String mensaje) {
-        alertas.add(mensaje);
+    protected void registrarAlerta(String tipo, String descripcion) {
+        alertas.registrarAlerta(tipo, descripcion);
     }
 
-    public List<String> getAlertas() {
-        return new ArrayList<>(alertas);
+    public List<Alerta> getAlertas() {
+        return alertas.revisarAlertas();
     }
 }
