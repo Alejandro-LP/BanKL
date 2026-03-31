@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Divisas - BanKL</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+
+<body>
+
+<header>
+    <div>
+        <div class="logo">
+            <span>Ban</span><span>KL</span>
+        </div>
+        <small>Cambio de divisas</small>
+    </div>
+
+    <div class="buttons">
+        <a href="dashboard.html"><button>Volver</button></a>
+        <button onclick="toggleDark()" class="dark-btn">🌙</button>
+    </div>
+</header>
+
+<main class="login-container">
+
+    <div class="login-card">
+    <h2>Conversor 💱</h2>
+
+    <input type="number" id="cuentaId" placeholder="ID Cuenta">
+    <input type="number" id="monto" placeholder="Monto en COP">
+
+    <select id="moneda">
+        <option value="USD">USD</option>
+        <option value="EUR">EUR</option>
+    </select>
+
+    <button onclick="convertir()">Convertir</button>
+
+    <h3 id="resultado"></h3>
+</div>
+
+<h2 style="text-align:center;">Historial 📊</h2>
+<div id="historial"></div>
+
+</main>
+
+<footer>
+    <div>BanKL</div>
+</footer>
+
+<script src="../js/app.js"></script>
+<script src="../js/divisas.js"></script>
+</body>
+</html>
