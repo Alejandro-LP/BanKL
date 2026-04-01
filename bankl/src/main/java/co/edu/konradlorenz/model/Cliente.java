@@ -1,21 +1,36 @@
 package co.edu.konradlorenz.model;
 
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Cliente {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer idDB; 
 
     protected String nombres;
     protected String apellidos;
-    protected String id;
+    protected String id; 
+
     protected String direccion;
     protected String telefono;
     protected String email;
-    protected List<Cuenta> cuentas;
+
+    @Column(unique = true)
     protected String usuarioIS;
+
     protected String contrasena;
     protected int pinSeguridad;
+
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+    protected List<Cuenta> cuentas;
+
+
 
     public Cliente() {
         this.cuentas = new ArrayList<>();
@@ -36,19 +51,26 @@ public abstract class Cliente {
         this.contrasena = contrasena;
     }
 
+   
+
+    public Integer getIdDB() { return idDB; } // 🔥 ID BD
+    public String getId() { return id; } // 🔥 tu ID (cédula)
+
     public String getNombres() { return nombres; }
     public String getApellidos() { return apellidos; }
-    public String getId() { return id; }
     public String getUsuarioIS() { return usuarioIS; }
     public String getContrasena() { return contrasena; }
     public int getPinSeguridad() { return pinSeguridad; }
 
     public List<Cuenta> getCuentas() {
-        return new ArrayList<>(cuentas);
+        return cuentas; // 🔥 IMPORTANTE (no copia)
     }
+
+   
 
     public void agregarCuenta(Cuenta cuenta) {
         if (cuenta != null) {
+            cuenta.setCliente(this); 
             cuentas.add(cuenta);
         }
     }

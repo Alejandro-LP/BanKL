@@ -1,9 +1,16 @@
 package co.edu.konradlorenz.model;
 
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Cuenta {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id; // 🔥 ID BD
 
     private int numeroCuenta;
     private String propietario;
@@ -13,6 +20,13 @@ public class Cuenta {
     private int cvv;
     private boolean bloqueada;
 
+    // 🔥 RELACIÓN CON CLIENTE
+    @ManyToOne
+    @JoinColumn(name = "cliente_id")
+    private Cliente cliente;
+
+    // 🔥 HISTORIAL COMO ENTIDAD
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Transaccion> historial = new ArrayList<>();
 
     public Cuenta() {}
@@ -29,14 +43,29 @@ public class Cuenta {
         this.bloqueada = false;
     }
 
+    // ================= GETTERS =================
+
+    public Integer getId() { return id; }
     public double getSaldo() { return saldo; }
     public String getNumeroTarjeta() { return numeroTarjeta; }
     public String getFechaExpiracion() { return fechaExpiracion; }
     public boolean isBloqueada() { return bloqueada; }
 
     public List<Transaccion> getHistorial() {
-        return new ArrayList<>(historial);
+        return historial; // 🔥 IMPORTANTE
     }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    // ================= SETTERS =================
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    // ================= LÓGICA =================
 
     protected void registrarTransaccion(String tipo, double valor) {
         historial.add(new Transaccion(tipo, valor));
@@ -87,7 +116,7 @@ public class Cuenta {
 
     protected void registrarAlerta(String tipo, String descripcion) {}
 
-    // GENERADORES
+    // ================= GENERADORES =================
 
     private String generarNumeroTarjeta() {
         String[] bins = {"51","52","53","54","55"};
