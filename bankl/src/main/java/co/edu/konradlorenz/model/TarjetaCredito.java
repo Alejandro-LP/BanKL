@@ -31,14 +31,13 @@ public class TarjetaCredito extends Cuenta {
             return false;
         }
 
-        if (!aumentarSaldo(valor)) {
+        if (!super.consignar(valor)) { // 🔥 CAMBIO
             registrarAlerta("ERROR", "Error en pago");
             return false;
         }
 
         cupo += valor;
 
-        registrarTransaccion("PAGO", valor);
         registrarAlerta("TRANSACCION", "Pago: " + valor);
         return true;
     }
@@ -56,17 +55,15 @@ public class TarjetaCredito extends Cuenta {
             return false;
         }
 
-    
-       aumentarSaldo(valor);
+        // 🔥 IMPORTANTE: en crédito el saldo sube (deuda)
+        super.consignar(valor);
 
         cupo -= valor;
 
-        registrarTransaccion("AVANCE", valor);
         registrarAlerta("TRANSACCION", "Avance: " + valor);
         return true;
     }
 
-    @Override
     protected void registrarAlerta(String tipo, String descripcion) {
         alertas.registrarAlerta(tipo, descripcion);
     }

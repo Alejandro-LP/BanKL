@@ -1,5 +1,8 @@
 package co.edu.konradlorenz.model;
 
+import jakarta.persistence.Entity;
+
+@Entity
 public class ClienteAdmin extends Cliente {
 
     public ClienteAdmin() {

@@ -9,9 +9,39 @@ import org.springframework.stereotype.Service;
 public class CuentaService {
 
     @Autowired
-    private CuentaRepository repo;
+    private CuentaRepository cuentaRepository;
 
-    public Cuenta buscarCuenta(int id) {
-        return repo.findById(id).orElse(null);
+    public Cuenta guardarCuenta(Cuenta cuenta) {
+        return cuentaRepository.save(cuenta);
+    }
+
+    public Cuenta buscarCuenta(Integer id) {
+        return cuentaRepository.findById(id).orElse(null);
+    }
+
+    public boolean consignar(Integer idCuenta, double valor) {
+
+        Cuenta cuenta = buscarCuenta(idCuenta);
+
+        if (cuenta != null) {
+            boolean ok = cuenta.consignar(valor);
+            cuentaRepository.save(cuenta);
+            return ok;
+        }
+
+        return false;
+    }
+
+    public boolean retirar(Integer idCuenta, double valor) {
+
+        Cuenta cuenta = buscarCuenta(idCuenta);
+
+        if (cuenta != null) {
+            boolean ok = cuenta.retirar(valor);
+            cuentaRepository.save(cuenta);
+            return ok;
+        }
+
+        return false;
     }
 }

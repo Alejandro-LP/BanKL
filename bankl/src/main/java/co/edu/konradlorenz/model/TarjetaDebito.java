@@ -22,12 +22,11 @@ public class TarjetaDebito extends Cuenta {
             return false;
         }
 
-        if (!aumentarSaldo(valor)) {
+        if (!super.consignar(valor)) { // 🔥 CAMBIO
             registrarAlerta("ERROR", "Error en depósito");
             return false;
         }
 
-        registrarTransaccion("DEPOSITO", valor);
         registrarAlerta("TRANSACCION", "Depósito: " + valor);
         return true;
     }
@@ -40,17 +39,15 @@ public class TarjetaDebito extends Cuenta {
             return false;
         }
 
-        if (!disminuirSaldo(valor)) {
+        if (!super.retirar(valor)) { // 🔥 CAMBIO
             registrarAlerta("ERROR", "Error en retiro");
             return false;
         }
 
-        registrarTransaccion("RETIRO", valor);
         registrarAlerta("TRANSACCION", "Retiro: " + valor);
         return true;
     }
 
-    @Override
     protected void registrarAlerta(String tipo, String descripcion) {
         alertas.registrarAlerta(tipo, descripcion);
     }

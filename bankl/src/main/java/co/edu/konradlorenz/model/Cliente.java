@@ -11,11 +11,11 @@ public abstract class Cliente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idDB; 
+    private Integer idDB;
 
     protected String nombres;
     protected String apellidos;
-    protected String id; 
+    protected String id;
 
     protected String direccion;
     protected String telefono;
@@ -29,8 +29,6 @@ public abstract class Cliente {
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     protected List<Cuenta> cuentas;
-
-
 
     public Cliente() {
         this.cuentas = new ArrayList<>();
@@ -51,26 +49,24 @@ public abstract class Cliente {
         this.contrasena = contrasena;
     }
 
-   
+    // ===== GETTERS =====
 
-    public Integer getIdDB() { return idDB; } // 🔥 ID BD
-    public String getId() { return id; } // 🔥 tu ID (cédula)
-
-    public String getNombres() { return nombres; }
-    public String getApellidos() { return apellidos; }
+    public Integer getIdDB() { return idDB; }
+    public String getId() { return id; }
     public String getUsuarioIS() { return usuarioIS; }
     public String getContrasena() { return contrasena; }
-    public int getPinSeguridad() { return pinSeguridad; }
 
     public List<Cuenta> getCuentas() {
-        return cuentas; // 🔥 IMPORTANTE (no copia)
+        return cuentas;
     }
 
-   
+    public int getPinSeguridad() {
+    return pinSeguridad;
+}
 
     public void agregarCuenta(Cuenta cuenta) {
         if (cuenta != null) {
-            cuenta.setCliente(this); 
+            cuenta.setCliente(this); // 🔥 CLAVE
             cuentas.add(cuenta);
         }
     }
