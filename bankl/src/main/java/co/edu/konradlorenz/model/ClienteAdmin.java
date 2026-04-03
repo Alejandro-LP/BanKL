@@ -1,8 +1,10 @@
 package co.edu.konradlorenz.model;
 
 import jakarta.persistence.Entity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ClienteAdmin extends Cliente {
 
     public ClienteAdmin() {

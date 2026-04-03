@@ -5,17 +5,28 @@ function login() {
     const contrasena = document.getElementById("contrasena").value;
     const pin = document.getElementById("pin").value;
 
-    fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ usuario, contrasena, pin })
+    fetch(`http://localhost:8080/clientes/login?usuario=${usuario}&contrasena=${contrasena}&pin=${pin}`, {
+        method: "POST"
     })
     .then(res => res.json())
     .then(data => {
-        if (data === true) {
-            window.location.href = "dashboard.html";
+
+        console.log(data); 
+
+        if (data !== null) {
+
+            // Guardar usuario
+            localStorage.setItem("usuario", data.usuarioIS);
+
+           
+            if (data.tipo === "ClienteNatural") {
+                window.location.href = "/html/cuentas.html";
+            } else if (data.tipo === "ClienteAdmin") {
+                window.location.href = "/html/dashboard.html";
+            } else {
+                document.getElementById("resultado").innerText = "Tipo de usuario desconocido";
+            }
+
         } else {
             document.getElementById("resultado").innerText = "Credenciales incorrectas ❌";
         }
@@ -29,29 +40,33 @@ function login() {
 // REGISTRO
 function registrar() {
 
-    const nombre = document.getElementById("nombre").value;
-    const apellido = document.getElementById("apellido").value;
-    const usuario = document.getElementById("usuarioR").value;
-    const contrasena = document.getElementById("contrasenaR").value;
-    const pin = document.getElementById("pinR").value;
+    const cliente = {
+        nombres: document.getElementById("nombres").value,
+        apellidos: document.getElementById("apellidos").value,
+        id: document.getElementById("id").value,
+        direccion: document.getElementById("direccion").value,
+        telefono: document.getElementById("telefono").value,
+        email: document.getElementById("email").value,
+        usuarioIS: document.getElementById("usuario").value,
+        contrasena: document.getElementById("contrasena").value
+    };
 
-    fetch("/api/auth/registro", {
+    fetch("http://localhost:8080/clientes/registro", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ nombre, apellido, usuario, contrasena, pin })
+        body: JSON.stringify(cliente)
     })
     .then(res => res.json())
     .then(data => {
-        if (data === true) {
-            document.getElementById("resultadoRegistro").innerText = "Cuenta creada ✅";
-        } else {
-            document.getElementById("resultadoRegistro").innerText = "Error al registrar ❌";
-        }
+        document.getElementById("resultadoRegistro").innerText =
+            "Cuenta creada. PIN: " + data.pinSeguridad;
     })
-    .catch(() => {
-        document.getElementById("resultadoRegistro").innerText = "Error ⚠️";
+    .catch(error => {
+        console.error(error);
+        document.getElementById("resultadoRegistro").innerText =
+            "Error al registrar";
     });
 }
 

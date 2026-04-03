@@ -5,6 +5,7 @@ import co.edu.konradlorenz.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "*") 
 @RestController
 @RequestMapping("/clientes")
 public class ClienteController {

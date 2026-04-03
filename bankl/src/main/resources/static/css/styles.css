@@ -296,3 +296,64 @@ select {
     border-radius: 5px;
     cursor: pointer;
 }
+.history-table {
+    width: 100%;
+    border-collapse: separate; /* Permite bordes redondeados */
+    border-spacing: 0 8px;      /* Separa las filas ligeramente */
+    margin-top: 10px;
+}
+
+.history-table th {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    color: #888;
+    padding: 10px 15px;
+    text-align: left;
+}
+
+.history-table tbody tr {
+    background-color: #ffffff;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Efecto al pasar el mouse por una fila */
+.history-table tbody tr:hover {
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.history-table td {
+    padding: 15px;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.9rem;
+}
+
+
+.history-table td:first-child {
+    border-left: 1px solid #f0f0f0;
+    border-radius: 8px 0 0 8px;
+}
+
+.history-table td:last-child {
+    border-right: 1px solid #f0f0f0;
+    border-radius: 0 8px 8px 0;
+}
+
+
+.currency-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: #eef2f7;
+    color: #34495e;
+    border: 1px solid #d1d8e0;
+}
+
+
+.amount-text {
+    font-weight: bold;
+    color: #27ae60;
+}

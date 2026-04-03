@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Divisas - BanKL</title>
     <link rel="stylesheet" href="../css/styles.css">
 </head>
@@ -17,36 +18,77 @@
     </div>
 
     <div class="buttons">
-        <a href="dashboard.html"><button>Volver</button></a>
+        <a href="cuentas.html"><button class="secondary-btn">← Volver</button></a>
         <button onclick="toggleDark()" class="dark-btn">🌙</button>
     </div>
 </header>
 
-<main class="login-container">
+<main class="login-container" style="flex-direction: column; gap: 40px; padding: 30px 20px;">
 
-    <div class="login-card">
-    <h2>Conversor </h2>
+    <div class="login-card" style="max-width: 550px; width: 100%;">
+        <h2>Convertidor de Moneda</h2>
+        <p style="font-size: 0.9rem; color: #666; margin-bottom: 25px;">Operaciones rápidas con tasa de cambio en tiempo real.</p>
 
-    <input type="number" id="cuentaId" placeholder="ID Cuenta">
-    <input type="number" id="monto" placeholder="Monto en COP">
+        <div style="display: flex; flex-direction: column; gap: 18px;">
+            <div>
+                <label style="font-size: 0.85rem; font-weight: 600;">ID de Cuenta</label>
+                <input type="number" id="cuentaId" placeholder="Ej: 887766" style="margin-top: 6px;">
+            </div>
 
-    <select id="moneda">
-        <option value="USD">USD</option>
-        <option value="EUR">EUR</option>
-    </select>
+            <div style="display: flex; gap: 12px; align-items: flex-end;">
+                <div style="flex: 2;">
+                    <label style="font-size: 0.85rem; font-weight: 600;">Monto en Pesos (COP)</label>
+                    <input type="number" id="monto" placeholder="0.00" style="margin-top: 6px;">
+                </div>
+                <div style="flex: 1;">
+                    <label style="font-size: 0.85rem; font-weight: 600;">Moneda</label>
+                    <select id="moneda" style="margin-top: 6px; height: 45px; width: 100%;">
+                        <option value="USD">🇺🇸 USD</option>
+                        <option value="EUR">🇪🇺 EUR</option>
+                    </select>
+                </div>
+            </div>
 
-    <button onclick="convertir()">Convertir</button>
+            <button onclick="convertir()" class="secondary-btn" style="margin-top: 10px; width: 100%;">
+                Realizar Conversión
+            </button>
+        </div>
 
-    <h3 id="resultado"></h3>
-</div>
+        <div id="resultado-container" style="margin-top: 25px; text-align: center; display: none;">
+            <p style="color: #666; font-size: 0.9rem;">Monto convertido:</p>
+            <h3 id="resultado" style="font-size: 2rem; color: #2ecc71;"></h3>
+        </div>
+    </div>
 
-<h2 style="text-align:center;">Historial 📊</h2>
-<div id="historial"></div>
+    <div style="width: 100%; max-width: 900px;">
+        <h2 style="text-align:left; margin-bottom: 15px;">Movimientos Recientes</h2>
+        
+        <div id="historial-container" style="background: transparent;">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>N° Cuenta</th>
+                        <th>Original (COP)</th>
+                        <th>Conversión</th>
+                        <th>Divisa</th>
+                    </tr>
+                </thead>
+                <tbody id="historial-body">
+                    <tr>
+                        <td colspan="5" style="text-align:center; color: #aaa; background: white; border-radius: 8px;">
+                            No se han realizado operaciones recientes.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
 </main>
 
 <footer>
-    <div>BanKL</div>
+    <div><b>BanKL</b> - 2026</div>
 </footer>
 
 <script src="../js/app.js"></script>
