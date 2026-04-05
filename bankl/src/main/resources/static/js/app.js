@@ -39,12 +39,10 @@ function login() {
             localStorage.setItem("tipo", data.tipo);
 
             if (data.tipo === "ClienteNatural") {
-                window.location.href = "cuentas.html";
+            window.location.href = "/html/cuentas.html";
             } else if (data.tipo === "ClienteAdmin") {
-                window.location.href = "dashboard.html";
-            } else {
-                mostrarMensaje("resultado", "Tipo de usuario desconocido", "error");
-            }
+            window.location.href = "/html/admin.html";
+}
 
         } else {
             mostrarMensaje("resultado", "Credenciales incorrectas o PIN inválido ", "error");
@@ -90,7 +88,7 @@ function registrar() {
     }
 
     if (!cliente.email || !emailValido.test(cliente.email)) {
-        return mostrarMensaje("resultadoRegistro", "Correo inválido 📧", "error");
+        return mostrarMensaje("resultadoRegistro", "Correo inválido ", "error");
     }
 
     if (!cliente.usuarioIS || !usuarioValido.test(cliente.usuarioIS)) {
@@ -98,7 +96,7 @@ function registrar() {
     }
 
     if (!cliente.contrasena || !passFuerte.test(cliente.contrasena)) {
-        return mostrarMensaje("resultadoRegistro", "Contraseña débil (mín 8, 1 mayúscula, 1 número) 🔒", "error");
+        return mostrarMensaje("resultadoRegistro", "Contraseña débil (mín 8, 1 mayúscula, 1 número) ", "error");
     }
 
     
@@ -117,7 +115,7 @@ function registrar() {
         mostrarMensaje("resultadoRegistro", "Cuenta creada PIN: " + data.pinSeguridad, "ok");
     })
     .catch(() => {
-        mostrarMensaje("resultadoRegistro", "Error al registrar ❌", "error");
+        mostrarMensaje("resultadoRegistro", "Error al registrar ", "error");
     });
 }
 

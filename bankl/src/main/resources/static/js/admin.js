@@ -48,6 +48,6 @@ function bloquear(id) {
     fetch(`http://localhost:8080/api/admin/bloquear?id=${id}`, {
         method: "POST"
     }).then(() => {
-        alert("Tarjetas bloqueadas 🔒");
+        alert("Tarjetas bloqueadas ");
     });
 }
