@@ -1,9 +1,9 @@
 package co.edu.konradlorenz.repository;
 
-import co.edu.konradlorenz.model.ClienteNatural;
+import co.edu.konradlorenz.model.Cliente;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ClienteRepository extends JpaRepository<ClienteNatural, Integer> {
+public interface ClienteRepository extends JpaRepository<Cliente, Integer> {
 
-    ClienteNatural findByUsuarioIS(String usuarioIS);
+    Cliente findByUsuarioIS(String usuarioIS);
 }

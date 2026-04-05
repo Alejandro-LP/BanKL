@@ -17,7 +17,7 @@
     </div>
 
     <div class="buttons">
-        <a href="../index.html"><button class="secondary-btn">Inicio</button></a>
+        <a href="index.html"><button class="secondary-btn">Inicio</button></a>
         <a href="Login.html"><button>Login</button></a>
         <button onclick="toggleDark()" class="dark-btn">🌙</button>
     </div>
@@ -27,19 +27,19 @@
 
     <div class="login-card">
         <h2>Registro</h2>
-
-        <input type="text" id="nombres" placeholder="Nombres">
-        <input type="text" id="apellidos" placeholder="Apellidos">
-        <input type="text" id="id" placeholder="Documento">
-        <input type="text" id="direccion" placeholder="Dirección">
-        <input type="text" id="telefono" placeholder="Teléfono">
-        <input type="email" id="email" placeholder="Correo">
+         
+        <input type="text" id="nombres" placeholder="Nombres"required>
+        <input type="text" id="apellidos" placeholder="Apellidos"required>
+        <input type="text" id="id" placeholder="Documento"required>
+        <input type="text" id="direccion" placeholder="Dirección"required>
+        <input type="text" id="telefono" placeholder="Teléfono"required>
+        <input type="email" id="email" placeholder="Correo"required>
 
         <input type="text" id="usuario" placeholder="Usuario">
         <input type="password" id="contrasena" placeholder="Contraseña">
-
+        <div class="buttons">
         <button onclick="registrar()">Crear Cuenta</button>
-
+        </div>
         <p id="resultadoRegistro"></p>
         
         <p>

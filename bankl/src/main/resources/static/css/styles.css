@@ -357,3 +357,53 @@ select {
     font-weight: bold;
     color: #27ae60;
 }
+/* HERO */
+.hero {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+}
+
+.hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hero-text {
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    transform: translateY(-50%);
+    color: white;
+}
+
+.hero-text h1 {
+    font-size: 2.5rem;
+}
+
+.info-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 50px;
+    gap: 30px;
+}
+
+.info-section img {
+    width: 40%;
+    border-radius: 10px;
+}
+
+.info-section .text {
+    width: 50%;
+}
+
+.reverse {
+    flex-direction: row-reverse;
+}
+#resultadoRegistro {
+    font-weight: bold;
+    text-align: center;
+}
