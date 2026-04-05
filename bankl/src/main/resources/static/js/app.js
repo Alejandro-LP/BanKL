@@ -20,19 +20,19 @@ function login() {
 
            
             if (data.tipo === "ClienteNatural") {
-                window.location.href = "/html/cuentas.html";
+                window.location.href = "cuentas.html";
             } else if (data.tipo === "ClienteAdmin") {
-                window.location.href = "/html/dashboard.html";
+                window.location.href = "dashboard.html";
             } else {
                 document.getElementById("resultado").innerText = "Tipo de usuario desconocido";
             }
 
         } else {
-            document.getElementById("resultado").innerText = "Credenciales incorrectas ❌";
+            document.getElementById("resultado").innerText = "Credenciales incorrectas o PIN inválido";
         }
     })
     .catch(() => {
-        document.getElementById("resultado").innerText = "Error ⚠️";
+        document.getElementById("resultado").innerText = "Error";
     });
 }
 
