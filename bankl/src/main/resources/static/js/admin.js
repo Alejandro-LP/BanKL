@@ -1,53 +1,43 @@
 document.addEventListener("DOMContentLoaded", () => {
-    cargarClientes();
-    cargarAlertas();
+    const tipo = localStorage.getItem("tipo");
+    if (tipo !== "ClienteAdmin") {
+        window.location.href = "/html/Login.html";
+        return;
+    }
+    cargarClientesNaturales();
 });
 
-function cargarClientes() {
+function cargarClientesNaturales() {
     fetch("http://localhost:8080/api/admin/clientes")
         .then(res => res.json())
         .then(data => {
-
             const contenedor = document.getElementById("clientes");
             contenedor.innerHTML = "";
 
+            if (data.length === 0) {
+                contenedor.innerHTML = "<p>No hay clientes naturales registrados.</p>";
+                return;
+            }
+
             data.forEach(c => {
-
                 const div = document.createElement("div");
                 div.classList.add("card-content");
-
                 div.innerHTML = `
-                    👤 ${c.nombre} - ${c.id}
-                    <button onclick="bloquear(${c.id})">Bloquear tarjetas</button>
+                    <strong>👤 ${c.nombres} ${c.apellidos}</strong><br>
+                    Documento: ${c.id} &nbsp;|&nbsp;
+                    Usuario: ${c.usuarioIS} &nbsp;|&nbsp;
+                    Email: ${c.email} &nbsp;|&nbsp;
+                    Teléfono: ${c.telefono}
                 `;
-
                 contenedor.appendChild(div);
             });
+        })
+        .catch(() => {
+            document.getElementById("clientes").innerHTML =
+                "<p style='color:red'>Error al cargar clientes.</p>";
         });
 }
 
-function cargarAlertas() {
-    fetch("http://localhost:8080/api/alertas")
-        .then(res => res.json())
-        .then(data => {
-
-            const contenedor = document.getElementById("alertas");
-            contenedor.innerHTML = "";
-
-            data.forEach(a => {
-                const div = document.createElement("div");
-                div.classList.add("card-content");
-
-                div.innerHTML = `⚠️ ${a.tipo} - ${a.descripcion}`;
-                contenedor.appendChild(div);
-            });
-        });
-}
-
-function bloquear(id) {
-    fetch(`http://localhost:8080/api/admin/bloquear?id=${id}`, {
-        method: "POST"
-    }).then(() => {
-        alert("Tarjetas bloqueadas ");
-    });
+function toggleDark() {
+    document.body.classList.toggle("dark");
 }

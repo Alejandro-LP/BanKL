@@ -20,28 +20,32 @@ public class CuentaService {
     }
 
     public boolean consignar(Integer idCuenta, double valor) {
-
         Cuenta cuenta = buscarCuenta(idCuenta);
-
         if (cuenta != null) {
             boolean ok = cuenta.consignar(valor);
             cuentaRepository.save(cuenta);
             return ok;
         }
-
         return false;
     }
 
     public boolean retirar(Integer idCuenta, double valor) {
-
         Cuenta cuenta = buscarCuenta(idCuenta);
-
         if (cuenta != null) {
             boolean ok = cuenta.retirar(valor);
             cuentaRepository.save(cuenta);
             return ok;
         }
+        return false;
+    }
 
+    public boolean regenerarTarjeta(Integer idCuenta) {
+        Cuenta cuenta = buscarCuenta(idCuenta);
+        if (cuenta != null) {
+            cuenta.regenerarTarjeta();
+            cuentaRepository.save(cuenta);
+            return true;
+        }
         return false;
     }
 }

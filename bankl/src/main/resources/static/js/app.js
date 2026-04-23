@@ -1,5 +1,6 @@
 function mostrarMensaje(id, msg, tipo) {
     const div = document.getElementById(id);
+    if (!div) return;
 
     div.innerText = msg;
     div.style.padding = "10px";
@@ -37,12 +38,14 @@ function login() {
 
             localStorage.setItem("usuario", data.usuarioIS);
             localStorage.setItem("tipo", data.tipo);
+            localStorage.setItem("idDB", data.idDB);
+            localStorage.setItem("nombre", data.nombres + " " + data.apellidos);
 
             if (data.tipo === "ClienteNatural") {
-            window.location.href = "/html/cuentas.html";
+                window.location.href = "/html/cuentas.html";
             } else if (data.tipo === "ClienteAdmin") {
-            window.location.href = "/html/admin.html";
-}
+                window.location.href = "/html/admin.html";
+            }
 
         } else {
             mostrarMensaje("resultado", "Credenciales incorrectas o PIN inválido ", "error");

@@ -7,6 +7,7 @@ import java.util.Random;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -69,6 +70,7 @@ public abstract class Cliente {
     @JsonIgnore
     public String getContrasena() { return contrasena; }
 
+
     
     public int getPinSeguridad() { return pinSeguridad; }
 
@@ -93,6 +95,7 @@ public abstract class Cliente {
     public void setTelefono(String telefono) { this.telefono = telefono; }
     public void setEmail(String email) { this.email = email; }
     public void setUsuarioIS(String usuarioIS) { this.usuarioIS = usuarioIS; }
+    @JsonProperty(access = Access.WRITE_ONLY)
     public void setContrasena(String contrasena) { this.contrasena = contrasena; }
 
     
