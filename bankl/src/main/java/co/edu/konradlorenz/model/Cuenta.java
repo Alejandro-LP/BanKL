@@ -20,8 +20,8 @@ public class Cuenta {
     private String fechaExpiracion;
     private int cvv;
     private boolean bloqueada;
-    private String tipo; 
-    private double cupo; 
+    private String tipo;
+    private double cupo;
 
     @JsonIgnore
     @ManyToOne
@@ -33,8 +33,6 @@ public class Cuenta {
     private List<Transaccion> historial = new ArrayList<>();
 
     public Cuenta() {}
-
-
 
     public static Cuenta crearDebito(String propietario) {
         Cuenta c = new Cuenta();
@@ -51,7 +49,7 @@ public class Cuenta {
         Cuenta c = new Cuenta();
         c.tipo = "CREDITO";
         c.propietario = propietario;
-        c.saldo = 0; 
+        c.saldo = 0;
         c.bloqueada = false;
         c.cupo = Math.round((1000 + Math.random() * 199000) * 100.0) / 100.0;
         c.generarDatosAleatorios();
@@ -60,20 +58,16 @@ public class Cuenta {
 
     private void generarDatosAleatorios() {
         Random r = new Random();
-        
         this.numeroCuenta = 10000000 + r.nextInt(90000000);
-        
         this.numeroTarjeta = String.format("%04d %04d %04d %04d",
             r.nextInt(10000), r.nextInt(10000), r.nextInt(10000), r.nextInt(10000));
-       
         this.cvv = 100 + r.nextInt(900);
-       
         int anio = 2026 + r.nextInt(4);
         int mes = 1 + r.nextInt(12);
         this.fechaExpiracion = String.format("%02d/%d", mes, anio);
     }
 
-
+    // Getters
     public Integer getId() { return id; }
     public int getNumeroCuenta() { return numeroCuenta; }
     public String getPropietario() { return propietario; }
@@ -84,38 +78,42 @@ public class Cuenta {
     public boolean isBloqueada() { return bloqueada; }
     public String getTipo() { return tipo; }
     public double getCupo() { return cupo; }
-    public double getDisponible() { return tipo.equals("CREDITO") ? cupo - saldo : saldo; }
+    public double getDisponible() { return "CREDITO".equals(tipo) ? cupo - saldo : saldo; }
     public Cliente getCliente() { return cliente; }
     public List<Transaccion> getHistorial() { return historial; }
 
-
+    // Setters
     public void setCliente(Cliente cliente) { this.cliente = cliente; }
     public void setBloqueada(boolean bloqueada) { this.bloqueada = bloqueada; }
 
-  
-    public void registrarTransaccion(String tipo, double valor) {
-        Transaccion t = new Transaccion(tipo, valor);
-        t.setCuenta(this);
-        historial.add(t);
-    }
-
+    // DEBITO: consignar = sumar saldo
+    // CREDITO: consignar = pagar deuda (reducir saldo)
     public boolean consignar(double valor) {
         if (bloqueada || valor <= 0) return false;
-        saldo += valor;
-        registrarTransaccion("CONSIGNACION", valor);
+        if ("CREDITO".equals(tipo)) {
+            // No se puede pagar mas de lo que se debe
+            if (valor > saldo) valor = saldo;
+            saldo -= valor;
+        } else {
+            saldo += valor;
+        }
         return true;
     }
 
+    // DEBITO: retirar = restar saldo (no puede quedar negativo)
+    // CREDITO: avance = aumentar deuda (no puede superar cupo)
     public boolean retirar(double valor) {
         if (bloqueada || valor <= 0) return false;
-        if ("DEBITO".equals(tipo) && valor > saldo) return false;
-        if ("CREDITO".equals(tipo) && valor > (cupo - saldo)) return false;
-        saldo += "CREDITO".equals(tipo) ? valor : -valor; // crédito sube deuda
-        registrarTransaccion("RETIRO", valor);
+        if ("DEBITO".equals(tipo)) {
+            if (valor > saldo) return false; // sin fondos
+            saldo -= valor;
+        } else {
+            if (saldo + valor > cupo) return false; // excede cupo
+            saldo += valor;
+        }
         return true;
     }
 
     public void bloquearTarjeta() { this.bloqueada = true; }
-
     public void regenerarTarjeta() { generarDatosAleatorios(); }
 }
