@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - BanKL</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .dashboard-header { display:flex; justify-content:space-between; align-items:center; }
+        .noti-btn { position:relative; background:none; border:2px solid var(--primary); color:var(--primary); border-radius:8px; padding:8px 14px; cursor:pointer; font-weight:700; }
+        #badgeNoti { background:#dc2626; color:white; border-radius:50%; padding:2px 6px; font-size:11px; position:absolute; top:-8px; right:-8px; }
+        .tabs { display:flex; gap:8px; flex-wrap:wrap; margin:24px 0 0; padding:0 40px; }
+        .tab-btn { padding:10px 20px; border:none; border-radius:10px 10px 0 0; background:#e2e8f0; color:#64748b; font-weight:600; cursor:pointer; transition:0.2s; }
+        .tab-btn.active { background:var(--primary); color:white; }
+        .tab-content { display:none; padding:30px 40px; }
+        .tab-content.active { display:block; }
+        .section-title { font-size:20px; font-weight:700; margin-bottom:20px; color:var(--text); }
+        .form-card { background:var(--card); border-radius:14px; padding:24px; margin-bottom:24px; box-shadow:0 4px 15px rgba(0,0,0,0.07); }
+        .form-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:12px; margin-bottom:16px; }
+        .form-grid input, .form-grid select { padding:10px 14px; border:1.5px solid #e2e8f0; border-radius:8px; font-size:14px; background:var(--bg); color:var(--text); }
+        .form-grid input:focus, .form-grid select:focus { border-color:var(--primary); outline:none; }
+        .items-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:16px; }
+        .item-card { background:var(--card); border-radius:14px; padding:20px; box-shadow:0 4px 15px rgba(0,0,0,0.07); border-left:4px solid var(--primary); }
+        .item-card.pagado { border-left-color:#16a34a; }
+        .item-card.activa { border-left-color:#7c3aed; }
+        .item-card.rechazado { border-left-color:#dc2626; }
+        .item-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; font-weight:700; font-size:15px; }
+        .badge-estado { font-size:11px; padding:3px 10px; border-radius:20px; background:#f1f5f9; color:#475569; font-weight:600; }
+        .item-body { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+        .empty { color:#94a3b8; font-style:italic; padding:20px 0; }
+        .noti-item { background:var(--card); border-radius:10px; padding:14px; margin-bottom:10px; cursor:pointer; border-left:4px solid var(--primary); transition:0.2s; }
+        .noti-item.leida { opacity:0.5; border-left-color:#cbd5e1; }
+        .noti-tipo { font-size:10px; font-weight:700; padding:2px 8px; border-radius:20px; margin-right:8px; }
+        .noti-info { background:#dbeafe; color:#1d4ed8; }
+        .noti-alerta { background:#fef9c3; color:#854d0e; }
+        .noti-pago { background:#dcfce7; color:#16a34a; }
+        .noti-item p { margin:4px 0; font-size:13px; color:#64748b; }
+        .noti-item small { color:#94a3b8; font-size:11px; }
+    </style>
+</head>
+<body>
+<header>
+    <div class="dashboard-header" style="width:100%">
+        <div>
+            <div class="logo"><span>Ban</span><span>KL</span></div>
+            <small id="bienvenida">Panel principal</small>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+            <a href="cuentas.html"><button>💳 Mis Tarjetas</button></a>
+            <button class="noti-btn" onclick="mostrarTab('notificaciones')">
+                 <span id="badgeNoti" style="display:none"></span>
+            </button>
+            <button onclick="toggleDark()" class="dark-btn">🌙</button>
+            <button onclick="cerrarSesion()">Salir</button>
+        </div>
+    </div>
+</header>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="mostrarTab('prestamos')"> Préstamos</button>
+    <button class="tab-btn" onclick="mostrarTab('inversiones')"> Inversiones</button>
+    <button class="tab-btn" onclick="mostrarTab('transferencias')"> Transferencias</button>
+    <button class="tab-btn" onclick="mostrarTab('beneficiarios')"> Beneficiarios</button>
+    <button class="tab-btn" onclick="mostrarTab('notificaciones')"> Notificaciones</button>
+</div>
+
+
+<div class="tab-content active" id="tab-prestamos">
+    <h2 class="section-title"> Mis Préstamos</h2>
+    <div class="form-card">
+        <h3 style="margin-bottom:16px">Solicitar nuevo préstamo</h3>
+        <div class="form-grid">
+            <input id="montoP" type="number" placeholder="Monto ($)" min="100">
+            <input id="tasaP" type="number" placeholder="Tasa anual (%)" value="12" step="0.1">
+            <input id="cuotasP" type="number" placeholder="N° cuotas" min="1" max="60">
+        </div>
+        <button class="btn-accion btn-ingresar" onclick="solicitarPrestamo()">✅ Solicitar préstamo</button>
+    </div>
+    <div class="items-grid" id="listaPrestamos"><p class="empty">Cargando...</p></div>
+</div>
+
+
+<div class="tab-content" id="tab-inversiones">
+    <h2 class="section-title">Mis Inversiones</h2>
+    <div class="form-card">
+        <h3 style="margin-bottom:16px">Nueva inversión</h3>
+        <div class="form-grid">
+            <input id="montoI" type="number" placeholder="Monto ($)" min="100">
+            <input id="tasaI" type="number" placeholder="Tasa anual (%)" value="8" step="0.1">
+            <input id="plazoI" type="number" placeholder="Plazo (meses)" min="1" max="60">
+            <select id="tipoI">
+                <option value="CDT">CDT</option>
+                <option value="AHORRO_PROGRAMADO">Ahorro Programado</option>
+            </select>
+        </div>
+        <button class="btn-accion btn-ingresar" onclick="crearInversion()">Crear inversión</button>
+    </div>
+    <div class="items-grid" id="listaInversiones"><p class="empty">Cargando...</p></div>
+</div>
+
+
+<div class="tab-content" id="tab-transferencias">
+    <h2 class="section-title">↗ Transferencias</h2>
+    <div class="form-card">
+        <h3 style="margin-bottom:16px">Nueva transferencia</h3>
+        <div class="form-grid">
+            <input id="cuentaOrigen" type="text" placeholder="N° cuenta origen">
+            <input id="cuentaDestino" type="text" placeholder="N° cuenta destino">
+            <input id="destinatarioT" type="text" placeholder="Nombre destinatario">
+            <input id="montoT" type="number" placeholder="Monto ($)" min="1">
+            <input id="descripcionT" type="text" placeholder="Descripción (opcional)">
+        </div>
+        <button class="btn-accion btn-avance" onclick="realizarTransferencia()"> Transferir</button>
+    </div>
+    <div class="items-grid" id="listaTransferencias"><p class="empty">Sin transferencias</p></div>
+</div>
+
+
+<div class="tab-content" id="tab-beneficiarios">
+    <h2 class="section-title">Mis Beneficiarios</h2>
+    <div class="form-card">
+        <h3 style="margin-bottom:16px">Agregar beneficiario</h3>
+        <form id="formBeneficiario" onsubmit="return false">
+            <div class="form-grid">
+                <input id="nombreB" type="text" placeholder="Nombre completo *">
+                <input id="cuentaB" type="text" placeholder="N° cuenta *">
+                <input id="bancoB" type="text" placeholder="Banco *">
+                <input id="aliasB" type="text" placeholder="Alias (opcional)">
+            </div>
+        </form>
+        <button class="btn-accion btn-cambiar" onclick="agregarBeneficiario()">➕ Agregar</button>
+    </div>
+    <div class="items-grid" id="listaBeneficiarios"><p class="empty">Sin beneficiarios</p></div>
+</div>
+
+
+<div class="tab-content" id="tab-notificaciones">
+    <h2 class="section-title">Notificaciones</h2>
+    <div id="listaNoti"><p class="empty">Sin notificaciones</p></div>
+</div>
+
+<footer><div>BanKL</div></footer>
+<script src="../js/app.js"></script>
+<script src="../js/dashboard.js"></script>
+<script>
+    function cerrarSesion() {
+        localStorage.clear();
+        window.location.href = "/html/Login.html";
+    }
+    cargarPrestamos();
+</script>
+</body>
+</html>
