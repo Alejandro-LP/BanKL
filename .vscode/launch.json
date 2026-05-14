@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-BanklApplication<bankl>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "co.edu.konradlorenz.BanklApplication",
+            "projectName": "bankl",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

@@ -20,7 +20,10 @@ function cargarCuentas() {
     const usuario = localStorage.getItem("usuario");
 
     fetch(`http://localhost:8080/clientes/cuentas?usuario=${usuario}`)
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) throw new Error("Error " + res.status);
+            return res.json();
+        })
         .then(cuentas => {
             const contenedor = document.getElementById("contenedorCuentas");
             contenedor.innerHTML = "";
@@ -41,9 +44,7 @@ function cargarCuentas() {
                             <span class="banco-nombre">BanKL</span>
                             <span class="tarjeta-tipo">${esCredito ? 'CRÉDITO' : 'DÉBITO'}</span>
                         </div>
-                        <div class="chip">
-                            <div class="chip-inner"></div>
-                        </div>
+                        <div class="chip"><div class="chip-inner"></div></div>
                         <div class="tarjeta-numero">${cuenta.numeroTarjeta}</div>
                         <div class="tarjeta-bottom">
                             <div>
@@ -60,14 +61,13 @@ function cargarCuentas() {
                             </div>
                         </div>
                     </div>
-
                     <div class="tarjeta-info">
                         ${esCredito ? `
-                            <div class="info-row"><span>Cupo total</span><strong>$${cuenta.cupo.toLocaleString("en-US", {minimumFractionDigits: 2})}</strong></div>
-                            <div class="info-row"><span>Disponible</span><strong class="verde">$${cuenta.disponible.toLocaleString("en-US", {minimumFractionDigits: 2})}</strong></div>
-                            <div class="info-row"><span>Deuda</span><strong class="${cuenta.saldo > 0 ? 'rojo' : ''}">$${cuenta.saldo.toLocaleString("en-US", {minimumFractionDigits: 2})}</strong></div>
+                            <div class="info-row"><span>Cupo total</span><strong>$${cuenta.cupo.toLocaleString("en-US",{minimumFractionDigits:2})}</strong></div>
+                            <div class="info-row"><span>Disponible</span><strong class="verde">$${cuenta.disponible.toLocaleString("en-US",{minimumFractionDigits:2})}</strong></div>
+                            <div class="info-row"><span>Deuda</span><strong class="${cuenta.saldo>0?'rojo':''}">$${cuenta.saldo.toLocaleString("en-US",{minimumFractionDigits:2})}</strong></div>
                         ` : `
-                            <div class="info-row"><span>Saldo disponible</span><strong class="verde">$${cuenta.saldo.toLocaleString("en-US", {minimumFractionDigits: 2})}</strong></div>
+                            <div class="info-row"><span>Saldo disponible</span><strong class="verde">$${cuenta.saldo.toLocaleString("en-US",{minimumFractionDigits:2})}</strong></div>
                         `}
                         <div class="tarjeta-acciones">
                             ${esCredito ? `
@@ -81,12 +81,11 @@ function cargarCuentas() {
                         </div>
                     </div>
                 `;
-
                 contenedor.appendChild(wrapper);
             });
         })
         .catch(err => {
-            console.error("Error:", err);
+            console.error("Error cargando cuentas:", err);
             document.getElementById("contenedorCuentas").innerHTML =
                 "<p style='padding:40px;color:red'>Error cargando cuentas ⚠️</p>";
         });
@@ -94,28 +93,28 @@ function cargarCuentas() {
 
 function ingresar(id) {
     const valor = prompt("Valor a ingresar ($):");
-    if (!valor || isNaN(valor) || valor <= 0) return;
+    if (!valor || isNaN(valor) || Number(valor) <= 0) return;
     fetch(`http://localhost:8080/cuentas/consignar?idCuenta=${id}&valor=${valor}`, { method: "POST" })
         .then(() => cargarCuentas());
 }
 
 function retirar(id) {
     const valor = prompt("Valor a retirar ($):");
-    if (!valor || isNaN(valor) || valor <= 0) return;
+    if (!valor || isNaN(valor) || Number(valor) <= 0) return;
     fetch(`http://localhost:8080/cuentas/retirar?idCuenta=${id}&valor=${valor}`, { method: "POST" })
         .then(() => cargarCuentas());
 }
 
 function pagar(id) {
     const valor = prompt("Valor a pagar ($):");
-    if (!valor || isNaN(valor) || valor <= 0) return;
+    if (!valor || isNaN(valor) || Number(valor) <= 0) return;
     fetch(`http://localhost:8080/cuentas/consignar?idCuenta=${id}&valor=${valor}`, { method: "POST" })
         .then(() => cargarCuentas());
 }
 
 function avance(id) {
     const valor = prompt("Valor del avance ($):");
-    if (!valor || isNaN(valor) || valor <= 0) return;
+    if (!valor || isNaN(valor) || Number(valor) <= 0) return;
     fetch(`http://localhost:8080/cuentas/retirar?idCuenta=${id}&valor=${valor}`, { method: "POST" })
         .then(() => cargarCuentas());
 }
@@ -123,9 +122,15 @@ function avance(id) {
 function cambiarTarjeta(id) {
     if (!confirm("¿Deseas regenerar los datos de esta tarjeta?")) return;
     fetch(`http://localhost:8080/cuentas/cambiar?idCuenta=${id}`, { method: "POST" })
-        .then(() => cargarCuentas());
+        .then(res => {
+            if (!res.ok) throw new Error("Error " + res.status);
+            return res.text();
+        })
+        .then(() => {
+            // Forzar recarga limpia sin caché
+            setTimeout(() => cargarCuentas(), 300);
+        })
+        .catch(err => alert("Error al cambiar tarjeta: " + err));
 }
 
-function toggleDark() {
-    document.body.classList.toggle("dark");
-}
+function toggleDark() { document.body.classList.toggle("dark"); }

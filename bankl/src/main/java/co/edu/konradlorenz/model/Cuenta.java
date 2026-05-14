@@ -20,8 +20,8 @@ public class Cuenta {
     private String fechaExpiracion;
     private int cvv;
     private boolean bloqueada;
-    private String tipo; // "DEBITO" o "CREDITO"
-    private double cupo; // solo aplica para crédito (máx 200000)
+    private String tipo; 
+    private double cupo; 
 
     @JsonIgnore
     @ManyToOne

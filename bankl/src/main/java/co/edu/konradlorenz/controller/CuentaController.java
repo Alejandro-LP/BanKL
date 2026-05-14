@@ -4,6 +4,7 @@ import co.edu.konradlorenz.service.CuentaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/cuentas")
 public class CuentaController {
@@ -12,20 +13,17 @@ public class CuentaController {
     private CuentaService cuentaService;
 
     @PostMapping("/consignar")
-    public String consignar(@RequestParam Integer idCuenta,
-                            @RequestParam double valor) {
-
-        boolean ok = cuentaService.consignar(idCuenta, valor);
-
-        return ok ? "Consignación exitosa" : "Error en consignación";
+    public String consignar(@RequestParam Integer idCuenta, @RequestParam double valor) {
+        return cuentaService.consignar(idCuenta, valor) ? "OK" : "Error";
     }
 
     @PostMapping("/retirar")
-    public String retirar(@RequestParam Integer idCuenta,
-                          @RequestParam double valor) {
+    public String retirar(@RequestParam Integer idCuenta, @RequestParam double valor) {
+        return cuentaService.retirar(idCuenta, valor) ? "OK" : "Fondos insuficientes";
+    }
 
-        boolean ok = cuentaService.retirar(idCuenta, valor);
-
-        return ok ? "Retiro exitoso" : "Error en retiro";
+    @PostMapping("/cambiar")
+    public String cambiar(@RequestParam Integer idCuenta) {
+        return cuentaService.regenerarTarjeta(idCuenta) ? "OK" : "Error";
     }
 }
