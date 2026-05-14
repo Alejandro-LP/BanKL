@@ -4,40 +4,89 @@
     <meta charset="UTF-8">
     <title>Admin - BanKL</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .admin-grid { display:grid; grid-template-columns:1fr; gap:16px; padding:30px 40px; }
+        .cliente-card { background:var(--card); border-radius:14px; padding:20px; box-shadow:0 4px 15px rgba(0,0,0,0.07); border-left:4px solid var(--primary); }
+        .cliente-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+        .cliente-nombre { font-size:16px; font-weight:700; color:var(--text); }
+        .cliente-info { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:8px; margin-bottom:14px; }
+        .info-item { font-size:13px; color:#64748b; }
+        .info-item strong { display:block; color:var(--text); font-size:14px; }
+        .btn-editar { background:#dbeafe; color:#1d4ed8; border:none; padding:8px 16px; border-radius:8px; font-weight:600; cursor:pointer; font-size:13px; }
+        .btn-editar:hover { background:#bfdbfe; }
+
+        /* Modal */
+        .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center; }
+        .modal-overlay.active { display:flex; }
+        .modal { background:var(--card); border-radius:16px; padding:30px; width:100%; max-width:480px; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
+        .modal h3 { margin-bottom:20px; font-size:18px; color:var(--text); }
+        .modal-field { margin-bottom:14px; }
+        .modal-field label { display:block; font-size:12px; font-weight:600; color:#64748b; margin-bottom:4px; letter-spacing:0.5px; }
+        .modal-field input { width:100%; padding:10px 14px; border:1.5px solid #e2e8f0; border-radius:8px; font-size:14px; background:var(--bg); color:var(--text); box-sizing:border-box; }
+        .modal-field input:focus { border-color:var(--primary); outline:none; }
+        .modal-btns { display:flex; gap:10px; margin-top:20px; justify-content:flex-end; }
+        .btn-guardar { background:var(--primary); color:white; border:none; padding:10px 24px; border-radius:8px; font-weight:600; cursor:pointer; }
+        .btn-cancelar { background:#f1f5f9; color:#475569; border:none; padding:10px 24px; border-radius:8px; font-weight:600; cursor:pointer; }
+        .msg-exito { background:#dcfce7; color:#16a34a; padding:10px; border-radius:8px; margin-top:10px; font-weight:600; display:none; }
+        .empty { color:#94a3b8; font-style:italic; padding:20px; }
+    </style>
 </head>
-
 <body>
-
 <header>
     <div>
-        <div class="logo">
-            <span>Ban</span><span>KL</span>
-        </div>
+        <div class="logo"><span>Ban</span><span>KL</span></div>
         <small>Panel Administrador</small>
     </div>
-
     <div class="buttons">
-        <a href="index.html"><button>Salir</button></a>
-        <button onclick="toggleDark()" class="dark-btn">🌙</button>
+        <button onclick="cerrarSesion()" style="background:#fee2e2;color:#dc2626;border:none;padding:8px 16px;border-radius:8px;font-weight:600;cursor:pointer">Salir</button>
+        <button onclick="toggleDark()" class="dark-btn">Modo Oscuro</button>
     </div>
 </header>
 
-<main class="container">
+<div style="padding:30px 40px 0">
+    <h2 style="color:var(--text);margin-bottom:4px">Clientes Naturales</h2>
+    <p style="color:#94a3b8;font-size:14px">Gestiona la informacion de los clientes registrados</p>
+</div>
 
-    <div class="card">
-        <div class="card-title">Clientes</div>
-        <div id="clientes"></div>
+<div class="admin-grid" id="listaClientes">
+    <p class="empty">Cargando clientes...</p>
+</div>
+
+<!-- Modal edicion -->
+<div class="modal-overlay" id="modalEditar">
+    <div class="modal">
+        <h3>Editar cliente</h3>
+        <input type="hidden" id="editIdDB">
+        <div class="modal-field">
+            <label>NOMBRES</label>
+            <input type="text" id="editNombres">
+        </div>
+        <div class="modal-field">
+            <label>APELLIDOS</label>
+            <input type="text" id="editApellidos">
+        </div>
+        <div class="modal-field">
+            <label>EMAIL</label>
+            <input type="email" id="editEmail">
+        </div>
+        <div class="modal-field">
+            <label>TELEFONO</label>
+            <input type="text" id="editTelefono">
+        </div>
+        <div class="modal-field">
+            <label>DIRECCION</label>
+            <input type="text" id="editDireccion">
+        </div>
+        <div id="msgExito" class="msg-exito">Cambios guardados correctamente</div>
+        <div class="modal-btns">
+            <button class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+            <button class="btn-guardar" onclick="guardarCambios()">Guardar cambios</button>
+        </div>
     </div>
+</div>
 
-    <div class="card">
-        <div class="card-title">Alertas</div>
-        <div id="alertas"></div>
-    </div>
-
-</main>
-
-<script src="../js/admin.js"></script>
+<footer><div>BanKL</div></footer>
 <script src="../js/app.js"></script>
-
+<script src="../js/admin.js"></script>
 </body>
 </html>
