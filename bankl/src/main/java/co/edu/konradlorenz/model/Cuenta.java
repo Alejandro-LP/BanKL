@@ -24,7 +24,7 @@ public class Cuenta {
     private double cupo;
 
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
@@ -67,7 +67,6 @@ public class Cuenta {
         this.fechaExpiracion = String.format("%02d/%d", mes, anio);
     }
 
-    // Getters
     public Integer getId() { return id; }
     public int getNumeroCuenta() { return numeroCuenta; }
     public String getPropietario() { return propietario; }
@@ -82,16 +81,12 @@ public class Cuenta {
     public Cliente getCliente() { return cliente; }
     public List<Transaccion> getHistorial() { return historial; }
 
-    // Setters
     public void setCliente(Cliente cliente) { this.cliente = cliente; }
     public void setBloqueada(boolean bloqueada) { this.bloqueada = bloqueada; }
 
-    // DEBITO: consignar = sumar saldo
-    // CREDITO: consignar = pagar deuda (reducir saldo)
     public boolean consignar(double valor) {
         if (bloqueada || valor <= 0) return false;
         if ("CREDITO".equals(tipo)) {
-            // No se puede pagar mas de lo que se debe
             if (valor > saldo) valor = saldo;
             saldo -= valor;
         } else {
@@ -100,15 +95,13 @@ public class Cuenta {
         return true;
     }
 
-    // DEBITO: retirar = restar saldo (no puede quedar negativo)
-    // CREDITO: avance = aumentar deuda (no puede superar cupo)
     public boolean retirar(double valor) {
         if (bloqueada || valor <= 0) return false;
         if ("DEBITO".equals(tipo)) {
-            if (valor > saldo) return false; // sin fondos
+            if (valor > saldo) return false;
             saldo -= valor;
         } else {
-            if (saldo + valor > cupo) return false; // excede cupo
+            if (saldo + valor > cupo) return false;
             saldo += valor;
         }
         return true;

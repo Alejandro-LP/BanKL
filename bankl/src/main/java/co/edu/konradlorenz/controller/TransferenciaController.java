@@ -10,13 +10,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/transferencias")
 public class TransferenciaController {
-    @Autowired private TransferenciaService transferenciaService;
+
+    @Autowired
+    private TransferenciaService transferenciaService;
 
     @PostMapping
-    public Transferencia realizar(@RequestParam String usuario, @RequestParam String cuentaOrigen,
-                                  @RequestParam String cuentaDestino, @RequestParam String destinatario,
-                                  @RequestParam double monto, @RequestParam String descripcion) {
-        return transferenciaService.realizar(usuario, cuentaOrigen, cuentaDestino, destinatario, monto, descripcion);
+    public Transferencia realizar(@RequestParam String usuario,
+                                  @RequestParam Integer cuentaOrigenId,
+                                  @RequestParam String cuentaDestino,
+                                  @RequestParam String destinatario,
+                                  @RequestParam double monto,
+                                  @RequestParam String descripcion) {
+        return transferenciaService.realizar(usuario, cuentaOrigenId, cuentaDestino, destinatario, monto, descripcion);
     }
 
     @GetMapping

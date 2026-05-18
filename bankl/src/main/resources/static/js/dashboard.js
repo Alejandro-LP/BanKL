@@ -24,7 +24,7 @@ function irTab(tab) {
     if (tab === "prestamos")       cargarPrestamos();
     if (tab === "inversiones")     cargarInversiones();
     if (tab === "beneficiarios")   cargarBeneficiarios();
-    if (tab === "transferencias")  cargarTransferencias();
+    if (tab === "transferencias")  { cargarTransferencias(); cargarCuentasParaTransferencia(); }
     if (tab === "notificaciones")  cargarNotificaciones();
     if (tab === "inicio")          cargarResumen();
 }
@@ -88,6 +88,7 @@ function cargarCuentasDash() {
                         </div>
                     </div>
                     <div class="tarjeta-info">
+                        <div class="info-row"><span>N de Cuenta</span><strong>${cuenta.numeroCuenta}</strong></div>
                         ${esCredito ? `
                             <div class="info-row"><span>Cupo total</span><strong>$${cuenta.cupo.toLocaleString("en-US",{minimumFractionDigits:2})}</strong></div>
                             <div class="info-row"><span>Disponible</span><strong class="verde">$${cuenta.disponible.toLocaleString("en-US",{minimumFractionDigits:2})}</strong></div>
@@ -290,18 +291,32 @@ function cargarTransferencias() {
                     </div>`).join("");
         });
 }
+function cargarCuentasParaTransferencia() {
+    fetch(`http://localhost:8080/clientes/cuentas?usuario=${usuario}`)
+        .then(r => r.json())
+        .then(cuentas => {
+            const sel = document.getElementById("cuentaOrigenSelect");
+            if (!sel) return;
+            sel.innerHTML = "<option value=''>Selecciona una cuenta</option>";
+            cuentas.forEach(c => {
+                const disp = c.tipo === "DEBITO" ? c.saldo.toFixed(2) : c.disponible.toFixed(2);
+                sel.innerHTML += `<option value="${c.id}">${c.tipo} - N ${c.numeroCuenta} | Disponible: $${disp}</option>`;
+            });
+        });
+}
+
 function realizarTransferencia() {
-    const origen=document.getElementById("cuentaOrigen").value;
+    const origenId=document.getElementById("cuentaOrigenSelect").value;
     const destino=document.getElementById("cuentaDestino").value;
     const dest=document.getElementById("destinatarioT").value;
     const monto=document.getElementById("montoT").value;
     const desc=document.getElementById("descripcionT").value||"Transferencia";
-    if(!origen||!destino||!dest||!monto){alert("Completa todos los campos");return;}
-    fetch(`http://localhost:8080/transferencias?usuario=${usuario}&cuentaOrigen=${origen}&cuentaDestino=${destino}&destinatario=${encodeURIComponent(dest)}&monto=${monto}&descripcion=${encodeURIComponent(desc)}`,{method:"POST"})
+    if(!origenId||!destino||!dest||!monto){alert("Completa todos los campos");return;}
+    fetch(`http://localhost:8080/transferencias?usuario=${usuario}&cuentaOrigenId=${origenId}&cuentaDestino=${destino}&destinatario=${encodeURIComponent(dest)}&monto=${monto}&descripcion=${encodeURIComponent(desc)}`,{method:"POST"})
         .then(r=>r.json())
         .then(t=>{
             cargarTransferencias();cargarNotificaciones();
-            alert(t.estado==="EXITOSA"?" Transferencia exitosa":" Fondos insuficientes");
+            alert(t.estado==="EXITOSA"?"Transferencia exitosa":"Fondos insuficientes");
         });
 }
 

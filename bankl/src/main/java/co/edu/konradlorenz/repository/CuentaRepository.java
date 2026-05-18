@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface CuentaRepository extends JpaRepository<Cuenta, Integer> {
     List<Cuenta> findByClienteIdDB(Integer clienteIdDB);
+    Cuenta findByNumeroCuenta(Integer numeroCuenta);
 }
