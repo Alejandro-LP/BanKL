@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.security.SecureRandom;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -72,6 +73,7 @@ public abstract class Cliente {
 
 
     
+    @JsonIgnore
     public int getPinSeguridad() { return pinSeguridad; }
 
     
@@ -108,7 +110,7 @@ public abstract class Cliente {
     }
 
     public void generarPinSeguridad() {
-        this.pinSeguridad = new Random().nextInt(9000) + 1000;
+        this.pinSeguridad = new SecureRandom().nextInt(9000) + 1000;
     }
 
     public abstract boolean iniciarSesion(String usuario, String contrasena, int pin);

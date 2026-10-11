@@ -3,18 +3,7 @@ function mostrarMensaje(id, msg, tipo) {
     if (!div) return;
 
     div.innerText = msg;
-    div.style.padding = "10px";
-    div.style.marginTop = "10px";
-    div.style.borderRadius = "8px";
-    div.style.fontWeight = "bold";
-
-    if (tipo === "error") {
-        div.style.backgroundColor = "#ff4d4d";
-        div.style.color = "white";
-    } else {
-        div.style.backgroundColor = "#28a745";
-        div.style.color = "white";
-    }
+    div.className = `feedback ${tipo === "error" ? "feedback-error" : "feedback-success"}`;
 }
 
 
@@ -31,17 +20,11 @@ async function login() {
         );
     }
 
-    const url = new URL(
-        "https://bankl-3d8a.onrender.com/clientes/login"
-    );
-
-    url.searchParams.set("usuario", usuario);
-    url.searchParams.set("contrasena", contrasena);
-    url.searchParams.set("pin", pin);
-
     try {
-        const res = await fetch(url.toString(), {
-            method: "POST"
+        const res = await fetch("/clientes/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ usuario, contrasena, pin: Number(pin) })
         });
 
         if (!res.ok) {
@@ -114,7 +97,7 @@ function registrar() {
     if (!cliente.contrasena || !passFuerte.test(cliente.contrasena)) return mostrarMensaje("resultadoRegistro", "Contraseña débil (mín 8, 1 mayúscula, 1 número)", "error");
 
    
-fetch("https://bankl-3d8a.onrender.com/clientes/registro", {
+fetch("/clientes/registro", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(cliente)

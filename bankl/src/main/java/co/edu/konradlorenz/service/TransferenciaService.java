@@ -5,6 +5,7 @@ import co.edu.konradlorenz.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TransferenciaService {
@@ -13,28 +14,34 @@ public class TransferenciaService {
     @Autowired private CuentaRepository cuentaRepository;
     @Autowired private NotificacionRepository notificacionRepository;
 
+    @Transactional
     public Transferencia realizar(String usuarioIS, Integer cuentaOrigenId,
             String cuentaDestinoNum, String destinatario, double monto, String descripcion) {
+
+        if (!Double.isFinite(monto) || monto <= 0 || cuentaDestinoNum == null || destinatario == null ||
+                cuentaDestinoNum.length() > 20 || destinatario.length() > 120 ||
+                (descripcion != null && descripcion.length() > 250))
+            throw new IllegalArgumentException("Datos de transferencia inválidos");
 
         Cliente cliente = clienteRepository.findByUsuarioIS(usuarioIS);
         if (cliente == null) throw new RuntimeException("Cliente no encontrado");
 
         // Buscar cuenta origen por ID
-        Cuenta origen = cuentaRepository.findById(cuentaOrigenId).orElse(null);
+        Cuenta origen = cuentaRepository.findByIdForUpdate(cuentaOrigenId).orElse(null);
 
-        if (origen == null || !origen.retirar(monto)) {
-            Transferencia fallida = Transferencia.crear(cliente,
-                origen != null ? String.valueOf(origen.getNumeroCuenta()) : "DESCONOCIDA",
-                cuentaDestinoNum, destinatario, monto, descripcion);
-            fallida.setEstado("FALLIDA");
-            return transferenciaRepository.save(fallida);
-        }
+        if (origen == null || origen.getCliente() == null || !origen.getCliente().getIdDB().equals(cliente.getIdDB()))
+            throw new IllegalArgumentException("Cuenta origen inválida");
 
         // Buscar cuenta destino por numeroCuenta y acreditarle el dinero
-        Cuenta destino = cuentaRepository.findByNumeroCuenta(Integer.parseInt(cuentaDestinoNum.trim()));
-        if (destino != null) {
-            destino.consignar(monto);
-            cuentaRepository.save(destino);
+        int numeroDestino;
+        try { numeroDestino=Integer.parseInt(cuentaDestinoNum.trim()); }
+        catch (NumberFormatException ex) { throw new IllegalArgumentException("Cuenta destino inválida"); }
+        Cuenta destino = cuentaRepository.findByNumeroCuentaForUpdate(numeroDestino);
+        if (destino == null || destino.getId().equals(origen.getId()))
+            throw new IllegalArgumentException("Cuenta destino inválida");
+        if (!origen.retirar(monto)) throw new IllegalArgumentException("Fondos insuficientes");
+        if (!destino.consignar(monto)) throw new IllegalArgumentException("No se pudo acreditar la cuenta destino");
+        cuentaRepository.save(destino);
 
             // Notificar al destinatario
             if (destino.getCliente() != null) {
@@ -43,8 +50,6 @@ public class TransferenciaService {
                     "Recibiste $" + monto + " de " + cliente.getNombres() + " " + cliente.getApellidos(),
                     "INFO"));
             }
-        }
-
         cuentaRepository.save(origen);
 
         Transferencia t = Transferencia.crear(cliente,

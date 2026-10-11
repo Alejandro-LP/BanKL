@@ -4,6 +4,7 @@ import co.edu.konradlorenz.model.Cuenta;
 import co.edu.konradlorenz.repository.CuentaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CuentaService {
@@ -19,8 +20,10 @@ public class CuentaService {
         return cuentaRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     public boolean consignar(Integer idCuenta, double valor) {
-        Cuenta cuenta = buscarCuenta(idCuenta);
+        if (!Double.isFinite(valor) || valor <= 0) return false;
+        Cuenta cuenta = cuentaRepository.findByIdForUpdate(idCuenta).orElse(null);
         if (cuenta != null) {
             boolean ok = cuenta.consignar(valor);
             cuentaRepository.save(cuenta);
@@ -29,8 +32,10 @@ public class CuentaService {
         return false;
     }
 
+    @Transactional
     public boolean retirar(Integer idCuenta, double valor) {
-        Cuenta cuenta = buscarCuenta(idCuenta);
+        if (!Double.isFinite(valor) || valor <= 0) return false;
+        Cuenta cuenta = cuentaRepository.findByIdForUpdate(idCuenta).orElse(null);
         if (cuenta != null) {
             boolean ok = cuenta.retirar(valor);
             cuentaRepository.save(cuenta);
@@ -39,8 +44,9 @@ public class CuentaService {
         return false;
     }
 
+    @Transactional
     public boolean regenerarTarjeta(Integer idCuenta) {
-        Cuenta cuenta = buscarCuenta(idCuenta);
+        Cuenta cuenta = cuentaRepository.findByIdForUpdate(idCuenta).orElse(null);
         if (cuenta != null) {
             cuenta.regenerarTarjeta();
             cuentaRepository.save(cuenta);

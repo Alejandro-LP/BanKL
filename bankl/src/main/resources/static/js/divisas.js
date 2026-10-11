@@ -7,7 +7,7 @@ function convertir() {
     const monto = document.getElementById("monto").value;
     const moneda = document.getElementById("moneda").value;
 
-    fetch(`http://localhost:8080/api/divisas/convertir?cuentaId=${cuentaId}&monto=${monto}&moneda=${moneda}`)
+    fetch(`/api/divisas/convertir?cuentaId=${cuentaId}&monto=${monto}&moneda=${moneda}`)
         .then(res => res.json())
         .then(data => {
 
@@ -25,7 +25,7 @@ function convertir() {
 
 function cargarHistorial() {
 
-    fetch("http://localhost:8080/api/divisas/historial")
+    fetch("/api/divisas/historial")
         .then(res => res.json())
         .then(lista => {
 
@@ -39,7 +39,7 @@ function cargarHistorial() {
 
                 div.innerHTML = `
                     <div class="card-content">
-                        ${c.montoCOP} COP → ${c.resultado} ${c.monedaDestino}
+                        ${c.montoCOP} COP → ${c.resultado} ${String(c.monedaDestino ?? "").replace(/[&<>"']/g, "") }
                     </div>
                 `;
 

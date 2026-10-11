@@ -2,62 +2,44 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registro - BanKL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f4f2e9">
+    <title>Abrir cuenta — BanKL</title>
     <link rel="stylesheet" href="../css/styles.css">
 </head>
-
-<body>
-
-<header>
-    <div>
-        <div class="logo">
-            <span>Ban</span><span>KL</span>
-        </div>
-        <small>Innovación financiera</small>
-    </div>
-
-    <div class="buttons">
-        <a href="index.html"><button class="secondary-btn">Inicio</button></a>
-        <a href="Login.html"><button>Login</button></a>
-        <button onclick="toggleDark()" class="dark-btn">🌙</button>
-    </div>
+<body class="auth-page register-page">
+<header class="site-header auth-header">
+    <a class="brand" href="index.html" aria-label="BanKL, inicio"><span>Ban</span><b>KL</b><i></i></a>
+    <a class="text-link" href="Login.html">¿Ya tienes cuenta? <b>Ingresar →</b></a>
 </header>
-
-<main class="login-container">
-
-    <div class="login-card">
-        <h2>Registro</h2>
-         
-        <input type="text" id="nombres" placeholder="Nombres"required>
-        <input type="text" id="apellidos" placeholder="Apellidos"required>
-        <input type="text" id="id" placeholder="Documento"required>
-        <input type="text" id="direccion" placeholder="Dirección"required>
-        <input type="text" id="telefono" placeholder="Teléfono"required>
-        <input type="email" id="email" placeholder="Correo"required>
-
-        <input type="text" id="usuario" placeholder="Usuario">
-        <input type="password" id="contrasena" placeholder="Contraseña">
-        <div class="buttons">
-        <button onclick="registrar()">Crear Cuenta</button>
+<main class="auth-layout register-layout">
+    <aside class="auth-aside">
+        <p class="eyebrow"><span></span> UN COMIENZO MÁS CLARO</p>
+        <h1>Abre la puerta<br>a una banca<br><em>más simple.</em></h1>
+        <p>Cuéntanos un poco de ti. Lo demás lo hacemos fácil.</p>
+        <div class="aside-stamp">BK<span>✳</span></div>
+        <span class="aside-index">AQUÍ COMIENZA TU HISTORIA</span>
+    </aside>
+    <section class="login-card auth-card register-card">
+        <p class="eyebrow">NUEVA CUENTA <span class="step-mark">01 — 01</span></p>
+        <h2>Empecemos por ti.</h2>
+        <p class="auth-intro">Tus datos nos ayudan a preparar tu espacio.</p>
+        <div class="register-grid">
+            <div><label for="nombres">Nombres</label><input type="text" id="nombres" placeholder="Como te llamas" autocomplete="given-name" required></div>
+            <div><label for="apellidos">Apellidos</label><input type="text" id="apellidos" placeholder="Tus apellidos" autocomplete="family-name" required></div>
+            <div><label for="id">Documento</label><input type="text" id="id" placeholder="Número de documento" autocomplete="off" required></div>
+            <div><label for="telefono">Teléfono</label><input type="tel" id="telefono" placeholder="Tu número" autocomplete="tel" required></div>
+            <div class="field-wide"><label for="direccion">Dirección</label><input type="text" id="direccion" placeholder="Calle y número" autocomplete="street-address" required></div>
+            <div class="field-wide"><label for="email">Correo electrónico</label><input type="email" id="email" placeholder="nombre@correo.com" autocomplete="email" required></div>
+            <div><label for="usuario">Elige un usuario</label><input type="text" id="usuario" placeholder="Tu usuario" autocomplete="username"></div>
+            <div><label for="contrasena">Crea una contraseña</label><input type="password" id="contrasena" placeholder="10 caracteres o más" autocomplete="new-password"><small class="field-hint">Incluye una mayúscula y un número.</small></div>
         </div>
-        <p id="resultadoRegistro"></p>
-        
-        <p>
-            ¿Ya tienes cuenta?
-            <a href="Login.html" class="link">Inicia sesión</a>
-        </p>
-
-        <p>
-            <a href="index.html" class="link" style="font-size: 0.8rem;">inicio</a>
-        </p>
-    </div>
-
+        <div class="auth-submit"><button class="button button-dark" onclick="registrar()">Crear mi cuenta <span>↗</span></button></div>
+        <p id="resultadoRegistro" role="status" aria-live="polite"></p>
+        <p class="privacy-note"><span>✳</span> Tus datos se usan para crear tu cuenta BanKL.</p>
+    </section>
 </main>
-
-<footer>
-    <div><b>BanKL</b></div>
-</footer>
-
+<footer class="auth-footer"><span>BanKL</span><span>Tu dinero, más claro.</span></footer>
 <script src="../js/app.js"></script>
 </body>
 </html>

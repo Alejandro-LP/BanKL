@@ -14,6 +14,9 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarResumen();
 });
 
+function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[char]);
+}
 // ===== TABS =====
 function irTab(tab) {
     document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
@@ -31,7 +34,7 @@ function irTab(tab) {
 
 // ===== RESUMEN INICIO =====
 function cargarResumen() {
-    fetch(`http://localhost:8080/clientes/cuentas?usuario=${usuario}`)
+    fetch(`/clientes/cuentas?usuario=${usuario}`)
         .then(r => r.json())
         .then(cuentas => {
             const debito  = cuentas.find(c => c.tipo === "DEBITO");
@@ -42,7 +45,7 @@ function cargarResumen() {
                 "$" + (credito ? credito.disponible.toLocaleString("en-US",{minimumFractionDigits:2}) : "0.00");
         }).catch(()=>{});
 
-    fetch(`http://localhost:8080/inversiones?usuario=${usuario}`)
+    fetch(`/inversiones?usuario=${usuario}`)
         .then(r => r.json())
         .then(data => {
             const total = data.filter(i=>i.estado==="ACTIVA").reduce((s,i)=>s+i.monto,0);
@@ -50,7 +53,7 @@ function cargarResumen() {
                 "$" + total.toLocaleString("en-US",{minimumFractionDigits:2});
         }).catch(()=>{});
 
-    fetch(`http://localhost:8080/prestamos?usuario=${usuario}`)
+    fetch(`/prestamos?usuario=${usuario}`)
         .then(r => r.json())
         .then(data => {
             const activos = data.filter(p=>p.estado==="ACTIVO").length;
@@ -60,7 +63,7 @@ function cargarResumen() {
 
 // ===== TARJETAS =====
 function cargarCuentasDash() {
-    fetch(`http://localhost:8080/clientes/cuentas?usuario=${usuario}`)
+    fetch(`/clientes/cuentas?usuario=${usuario}`)
         .then(r => { if(!r.ok) throw new Error(r.status); return r.json(); })
         .then(cuentas => {
             const contenedor = document.getElementById("contenedorCuentasDash");
@@ -82,9 +85,9 @@ function cargarCuentasDash() {
                         <div class="chip"><div class="chip-inner"></div></div>
                         <div class="tarjeta-numero">${cuenta.numeroTarjeta}</div>
                         <div class="tarjeta-bottom">
-                            <div><div class="tarjeta-label">TITULAR</div><div class="tarjeta-value">${cuenta.propietario.toUpperCase()}</div></div>
+                            <div><div class="tarjeta-label">TITULAR</div><div class="tarjeta-value">${escapeHtml(cuenta.propietario).toUpperCase()}</div></div>
                             <div><div class="tarjeta-label">VENCE</div><div class="tarjeta-value">${cuenta.fechaExpiracion}</div></div>
-                            <div><div class="tarjeta-label">CVV</div><div class="tarjeta-value">${cuenta.cvv}</div></div>
+                            <div><div class="tarjeta-label">CVV</div><div class="tarjeta-value">•••</div></div>
                         </div>
                     </div>
                     <div class="tarjeta-info">
@@ -117,23 +120,23 @@ function cargarCuentasDash() {
 
 function ingresarCuenta(id) {
     const v = prompt("Valor a ingresar ($):"); if (!v||isNaN(v)||v<=0) return;
-    fetch(`http://localhost:8080/cuentas/consignar?idCuenta=${id}&valor=${v}`,{method:"POST"}).then(()=>cargarCuentasDash());
+    fetch(`/cuentas/consignar?idCuenta=${id}&valor=${v}`,{method:"POST"}).then(()=>cargarCuentasDash());
 }
 function retirarCuenta(id) {
     const v = prompt("Valor a retirar ($):"); if (!v||isNaN(v)||v<=0) return;
-    fetch(`http://localhost:8080/cuentas/retirar?idCuenta=${id}&valor=${v}`,{method:"POST"}).then(()=>cargarCuentasDash());
+    fetch(`/cuentas/retirar?idCuenta=${id}&valor=${v}`,{method:"POST"}).then(()=>cargarCuentasDash());
 }
 function pagarCuenta(id) {
     const v = prompt("Valor a pagar ($):"); if (!v||isNaN(v)||v<=0) return;
-    fetch(`http://localhost:8080/cuentas/consignar?idCuenta=${id}&valor=${v}`,{method:"POST"}).then(()=>cargarCuentasDash());
+    fetch(`/cuentas/consignar?idCuenta=${id}&valor=${v}`,{method:"POST"}).then(()=>cargarCuentasDash());
 }
 function avanceCuenta(id) {
     const v = prompt("Valor del avance ($):"); if (!v||isNaN(v)||v<=0) return;
-    fetch(`http://localhost:8080/cuentas/retirar?idCuenta=${id}&valor=${v}`,{method:"POST"}).then(()=>cargarCuentasDash());
+    fetch(`/cuentas/retirar?idCuenta=${id}&valor=${v}`,{method:"POST"}).then(()=>cargarCuentasDash());
 }
 function cambiarTarjetaDash(id) {
     if (!confirm("¿Regenerar datos de esta tarjeta?")) return;
-    fetch(`http://localhost:8080/cuentas/cambiar?idCuenta=${id}`,{method:"POST"})
+    fetch(`/cuentas/cambiar?idCuenta=${id}`,{method:"POST"})
         .then(r=>{ if(!r.ok) throw new Error("Error "+r.status); return r.text(); })
         .then(()=>setTimeout(()=>cargarCuentasDash(),300))
         .catch(e=>alert("Error: "+e));
@@ -141,7 +144,7 @@ function cambiarTarjetaDash(id) {
 
 // ===== NOTIFICACIONES =====
 function cargarNotificaciones() {
-    fetch(`http://localhost:8080/notificaciones?usuario=${usuario}`)
+    fetch(`/notificaciones?usuario=${usuario}`)
         .then(r=>r.json())
         .then(data=>{
             const badge = document.getElementById("badgeNoti");
@@ -152,21 +155,21 @@ function cargarNotificaciones() {
                 ? "<p class='empty'>Sin notificaciones</p>"
                 : data.map(n=>`
                     <div class="noti-item ${n.leida?'leida':''}" onclick="leerNoti(${n.id},this)">
-                        <span class="noti-tipo noti-${n.tipo.toLowerCase()}">${n.tipo}</span>
-                        <strong>${n.titulo}</strong>
-                        <p>${n.mensaje}</p>
+                        <span class="noti-tipo noti-${escapeHtml(n.tipo).toLowerCase()}">${escapeHtml(n.tipo)}</span>
+                        <strong>${escapeHtml(n.titulo)}</strong>
+                        <p>${escapeHtml(n.mensaje)}</p>
                         <small>${new Date(n.fecha).toLocaleString("es-CO")}</small>
                     </div>`).join("");
         }).catch(()=>{});
 }
 function leerNoti(id,el) {
-    fetch(`http://localhost:8080/notificaciones/leer/${id}`,{method:"POST"})
+    fetch(`/notificaciones/leer/${id}`,{method:"POST"})
         .then(()=>{el.classList.add("leida");cargarNotificaciones();});
 }
 
 // ===== PRÉSTAMOS =====
 function cargarPrestamos() {
-    fetch(`http://localhost:8080/prestamos?usuario=${usuario}`)
+    fetch(`/prestamos?usuario=${usuario}`)
         .then(r=>r.json())
         .then(data=>{
             document.getElementById("listaPrestamos").innerHTML = data.length===0
@@ -190,24 +193,24 @@ function solicitarPrestamo() {
     const tasa=document.getElementById("tasaP").value;
     const cuotas=document.getElementById("cuotasP").value;
     if(!monto||!tasa||!cuotas){alert("Completa todos los campos");return;}
-    fetch(`http://localhost:8080/prestamos/solicitar?usuario=${usuario}&monto=${monto}&tasa=${tasa}&cuotas=${cuotas}`,{method:"POST"})
+    fetch(`/prestamos/solicitar?usuario=${usuario}&monto=${monto}&tasa=${tasa}&cuotas=${cuotas}`,{method:"POST"})
         .then(r=>r.json()).then(()=>{cargarPrestamos();cargarNotificaciones();alert("¡Préstamo aprobado!");});
 }
 function pagarCuotaPrestamo(id) {
-    fetch(`http://localhost:8080/prestamos/pagar/${id}`,{method:"POST"})
+    fetch(`/prestamos/pagar/${id}`,{method:"POST"})
         .then(()=>{cargarPrestamos();cargarNotificaciones();});
 }
 
 // ===== INVERSIONES =====
 function cargarInversiones() {
-    fetch(`http://localhost:8080/inversiones?usuario=${usuario}`)
+    fetch(`/inversiones?usuario=${usuario}`)
         .then(r=>r.json())
         .then(data=>{
             document.getElementById("listaInversiones").innerHTML = data.length===0
                 ? "<p class='empty'>No tienes inversiones</p>"
                 : data.map(i=>`
                     <div class="item-card ${i.estado.toLowerCase()}">
-                        <div class="item-header"><span> ${i.tipo}</span><span class="badge-estado">${i.estado}</span></div>
+                        <div class="item-header"><span> ${escapeHtml(i.tipo)}</span><span class="badge-estado">${i.estado}</span></div>
                         <div class="item-body">
                             <div class="info-row"><span>Monto</span><strong>$${i.monto.toLocaleString("en-US",{minimumFractionDigits:2})}</strong></div>
                             <div class="info-row"><span>Tasa</span><strong>${i.tasaInteres}% anual</strong></div>
@@ -226,17 +229,17 @@ function crearInversion() {
     const plazo=document.getElementById("plazoI").value;
     const tipo=document.getElementById("tipoI").value;
     if(!monto||!tasa||!plazo){alert("Completa todos los campos");return;}
-    fetch(`http://localhost:8080/inversiones?usuario=${usuario}&monto=${monto}&tasa=${tasa}&plazo=${plazo}&tipo=${tipo}`,{method:"POST"})
+    fetch(`/inversiones?usuario=${usuario}&monto=${monto}&tasa=${tasa}&plazo=${plazo}&tipo=${tipo}`,{method:"POST"})
         .then(r=>r.json()).then(()=>{cargarInversiones();cargarNotificaciones();alert("¡Inversión creada!");});
 }
 function retirarInversion(id) {
     if(!confirm("¿Retirar esta inversión?"))return;
-    fetch(`http://localhost:8080/inversiones/retirar/${id}`,{method:"POST"}).then(()=>cargarInversiones());
+    fetch(`/inversiones/retirar/${id}`,{method:"POST"}).then(()=>cargarInversiones());
 }
 
 // ===== BENEFICIARIOS =====
 function cargarBeneficiarios() {
-    fetch(`http://localhost:8080/beneficiarios?usuario=${usuario}`)
+    fetch(`/beneficiarios?usuario=${usuario}`)
         .then(r=>r.json())
         .then(data=>{
             document.getElementById("listaBeneficiarios").innerHTML = data.length===0
@@ -244,13 +247,13 @@ function cargarBeneficiarios() {
                 : data.map(b=>`
                     <div class="item-card">
                         <div class="item-header">
-                            <span> ${b.alias||b.nombre}</span>
+                            <span> ${escapeHtml(b.alias||b.nombre)}</span>
                             <button class="btn-accion btn-retirar" onclick="eliminarBeneficiario(${b.id})" style="padding:4px 10px;font-size:12px"></button>
                         </div>
                         <div class="item-body">
-                            <div class="info-row"><span>Nombre</span><strong>${b.nombre}</strong></div>
-                            <div class="info-row"><span>Cuenta</span><strong>${b.numeroCuenta}</strong></div>
-                            <div class="info-row"><span>Banco</span><strong>${b.banco}</strong></div>
+                            <div class="info-row"><span>Nombre</span><strong>${escapeHtml(b.nombre)}</strong></div>
+                            <div class="info-row"><span>Cuenta</span><strong>${escapeHtml(b.numeroCuenta)}</strong></div>
+                            <div class="info-row"><span>Banco</span><strong>${escapeHtml(b.banco)}</strong></div>
                         </div>
                     </div>`).join("");
         });
@@ -261,7 +264,7 @@ function agregarBeneficiario() {
     const banco=document.getElementById("bancoB").value;
     const alias=document.getElementById("aliasB").value;
     if(!nombre||!cuenta||!banco){alert("Completa los campos obligatorios");return;}
-    fetch(`http://localhost:8080/beneficiarios?usuario=${usuario}&nombre=${encodeURIComponent(nombre)}&numeroCuenta=${cuenta}&banco=${encodeURIComponent(banco)}&alias=${encodeURIComponent(alias)}`,{method:"POST"})
+    fetch(`/beneficiarios?usuario=${usuario}&nombre=${encodeURIComponent(nombre)}&numeroCuenta=${cuenta}&banco=${encodeURIComponent(banco)}&alias=${encodeURIComponent(alias)}`,{method:"POST"})
         .then(()=>{
             cargarBeneficiarios();
             ["nombreB","cuentaB","bancoB","aliasB"].forEach(id=>document.getElementById(id).value="");
@@ -269,30 +272,30 @@ function agregarBeneficiario() {
 }
 function eliminarBeneficiario(id) {
     if(!confirm("¿Eliminar beneficiario?"))return;
-    fetch(`http://localhost:8080/beneficiarios/${id}`,{method:"DELETE"}).then(()=>cargarBeneficiarios());
+    fetch(`/beneficiarios/${id}`,{method:"DELETE"}).then(()=>cargarBeneficiarios());
 }
 
 // ===== TRANSFERENCIAS =====
 function cargarTransferencias() {
-    fetch(`http://localhost:8080/transferencias?usuario=${usuario}`)
+    fetch(`/transferencias?usuario=${usuario}`)
         .then(r=>r.json())
         .then(data=>{
             document.getElementById("listaTransferencias").innerHTML = data.length===0
                 ? "<p class='empty'>Sin transferencias</p>"
                 : data.map(t=>`
                     <div class="item-card ${t.estado==='FALLIDA'?'fallida':''}">
-                        <div class="item-header"><span>↗ ${t.nombreDestinatario}</span><span class="badge-estado">${t.estado}</span></div>
+                        <div class="item-header"><span>↗ ${escapeHtml(t.nombreDestinatario)}</span><span class="badge-estado">${escapeHtml(t.estado)}</span></div>
                         <div class="item-body">
                             <div class="info-row"><span>Monto</span><strong class="rojo">-$${t.monto.toLocaleString("en-US",{minimumFractionDigits:2})}</strong></div>
                             <div class="info-row"><span>Destino</span><strong>${t.cuentaDestinoNumero}</strong></div>
-                            <div class="info-row"><span>Descripción</span><strong>${t.descripcion||"-"}</strong></div>
+                            <div class="info-row"><span>Descripción</span><strong>${escapeHtml(t.descripcion||"-")}</strong></div>
                             <div class="info-row"><span>Fecha</span><strong>${new Date(t.fecha).toLocaleString("es-CO")}</strong></div>
                         </div>
                     </div>`).join("");
         });
 }
 function cargarCuentasParaTransferencia() {
-    fetch(`http://localhost:8080/clientes/cuentas?usuario=${usuario}`)
+    fetch(`/clientes/cuentas?usuario=${usuario}`)
         .then(r => r.json())
         .then(cuentas => {
             const sel = document.getElementById("cuentaOrigenSelect");
@@ -312,7 +315,7 @@ function realizarTransferencia() {
     const monto=document.getElementById("montoT").value;
     const desc=document.getElementById("descripcionT").value||"Transferencia";
     if(!origenId||!destino||!dest||!monto){alert("Completa todos los campos");return;}
-    fetch(`http://localhost:8080/transferencias?usuario=${usuario}&cuentaOrigenId=${origenId}&cuentaDestino=${destino}&destinatario=${encodeURIComponent(dest)}&monto=${monto}&descripcion=${encodeURIComponent(desc)}`,{method:"POST"})
+    fetch(`/transferencias?usuario=${usuario}&cuentaOrigenId=${origenId}&cuentaDestino=${destino}&destinatario=${encodeURIComponent(dest)}&monto=${monto}&descripcion=${encodeURIComponent(desc)}`,{method:"POST"})
         .then(r=>r.json())
         .then(t=>{
             cargarTransferencias();cargarNotificaciones();
@@ -320,5 +323,10 @@ function realizarTransferencia() {
         });
 }
 
-function cerrarSesion() { localStorage.clear(); window.location.href="/html/Login.html"; }
+function cerrarSesion() {
+    fetch("/clientes/logout", { method: "POST" }).finally(() => {
+        localStorage.clear();
+        window.location.href="/html/Login.html";
+    });
+}
 function toggleDark() { document.body.classList.toggle("dark"); }

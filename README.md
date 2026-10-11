@@ -39,8 +39,8 @@ Base de Datos (MySQL 8)
 |---|---|---|
 | Base de datos | MySQL | 8.0 |
 | ORM | JPA / Hibernate | 6.5 |
-| Backend | Spring Boot | 3.3.2 |
-| Lenguaje | Java | 21 |
+| Backend | Spring Boot | 3.5.16 |
+| Lenguaje | Java | 25 |
 | Frontend | HTML5 + CSS3 + JavaScript | — |
 
 ---
@@ -98,7 +98,7 @@ El sistema cuenta con 9 tablas normalizadas hasta 3FN con estrategia de herencia
 ## Configuracion
 
 ### Requisitos previos
-- Java 21
+- Java 25 (LTS)
 - MySQL 8
 - Maven
 

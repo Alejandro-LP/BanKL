@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+function escapeHtml(value) { return String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]); }document.addEventListener("DOMContentLoaded", () => {
     const usuario = localStorage.getItem("usuario");
     const tipo = localStorage.getItem("tipo");
 
@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function cargarCuentas() {
     const usuario = localStorage.getItem("usuario");
 
-    fetch(`http://localhost:8080/clientes/cuentas?usuario=${usuario}`)
+    fetch(`/clientes/cuentas?usuario=${usuario}`)
         .then(res => {
             if (!res.ok) throw new Error("Error " + res.status);
             return res.json();
@@ -49,7 +49,7 @@ function cargarCuentas() {
                         <div class="tarjeta-bottom">
                             <div>
                                 <div class="tarjeta-label">TITULAR</div>
-                                <div class="tarjeta-value">${cuenta.propietario.toUpperCase()}</div>
+                                <div class="tarjeta-value">${escapeHtml(cuenta.propietario).toUpperCase()}</div>
                             </div>
                             <div>
                                 <div class="tarjeta-label">VENCE</div>
@@ -57,7 +57,7 @@ function cargarCuentas() {
                             </div>
                             <div>
                                 <div class="tarjeta-label">CVV</div>
-                                <div class="tarjeta-value">${cuenta.cvv}</div>
+                                <div class="tarjeta-value">•••</div>
                             </div>
                         </div>
                     </div>
@@ -94,34 +94,34 @@ function cargarCuentas() {
 function ingresar(id) {
     const valor = prompt("Valor a ingresar ($):");
     if (!valor || isNaN(valor) || Number(valor) <= 0) return;
-    fetch(`http://localhost:8080/cuentas/consignar?idCuenta=${id}&valor=${valor}`, { method: "POST" })
+    fetch(`/cuentas/consignar?idCuenta=${id}&valor=${valor}`, { method: "POST" })
         .then(() => cargarCuentas());
 }
 
 function retirar(id) {
     const valor = prompt("Valor a retirar ($):");
     if (!valor || isNaN(valor) || Number(valor) <= 0) return;
-    fetch(`http://localhost:8080/cuentas/retirar?idCuenta=${id}&valor=${valor}`, { method: "POST" })
+    fetch(`/cuentas/retirar?idCuenta=${id}&valor=${valor}`, { method: "POST" })
         .then(() => cargarCuentas());
 }
 
 function pagar(id) {
     const valor = prompt("Valor a pagar ($):");
     if (!valor || isNaN(valor) || Number(valor) <= 0) return;
-    fetch(`http://localhost:8080/cuentas/consignar?idCuenta=${id}&valor=${valor}`, { method: "POST" })
+    fetch(`/cuentas/consignar?idCuenta=${id}&valor=${valor}`, { method: "POST" })
         .then(() => cargarCuentas());
 }
 
 function avance(id) {
     const valor = prompt("Valor del avance ($):");
     if (!valor || isNaN(valor) || Number(valor) <= 0) return;
-    fetch(`http://localhost:8080/cuentas/retirar?idCuenta=${id}&valor=${valor}`, { method: "POST" })
+    fetch(`/cuentas/retirar?idCuenta=${id}&valor=${valor}`, { method: "POST" })
         .then(() => cargarCuentas());
 }
 
 function cambiarTarjeta(id) {
     if (!confirm("¿Deseas regenerar los datos de esta tarjeta?")) return;
-    fetch(`http://localhost:8080/cuentas/cambiar?idCuenta=${id}`, { method: "POST" })
+    fetch(`/cuentas/cambiar?idCuenta=${id}`, { method: "POST" })
         .then(res => {
             if (!res.ok) throw new Error("Error " + res.status);
             return res.text();

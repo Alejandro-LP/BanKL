@@ -7,36 +7,42 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarClientesNaturales();
 });
 
+function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[char]);
+}
+
 function cargarClientesNaturales() {
-    fetch("http://localhost:8080/api/admin/clientes")
+    fetch("/api/admin/clientes")
         .then(res => res.json())
         .then(data => {
+            const clientes = Array.isArray(data) ? data : [];
             const contenedor = document.getElementById("listaClientes");
             contenedor.innerHTML = "";
 
-            if (data.length === 0) {
+            if (clientes.length === 0) {
                 contenedor.innerHTML = "<p class='empty'>No hay clientes naturales registrados.</p>";
                 return;
             }
 
-            data.forEach(c => {
+            clientes.forEach(c => {
                 const div = document.createElement("div");
                 div.classList.add("cliente-card");
                 div.innerHTML = `
                     <div class="cliente-header">
-                        <div class="cliente-nombre">${c.nombres} ${c.apellidos}</div>
-                        <button class="btn-editar" onclick="abrirModal(${c.idDB}, '${c.nombres}', '${c.apellidos}', '${c.email}', '${c.telefono}', '${c.direccion}')">
+                        <div class="cliente-nombre">${escapeHtml(c.nombres)} ${escapeHtml(c.apellidos)}</div>
+                        <button class="btn-editar" data-id="${Number(c.idDB)}">
                             Editar
                         </button>
                     </div>
                     <div class="cliente-info">
-                        <div class="info-item"><strong>${c.id}</strong>Documento</div>
-                        <div class="info-item"><strong>${c.usuarioIS}</strong>Usuario</div>
-                        <div class="info-item"><strong>${c.email}</strong>Email</div>
-                        <div class="info-item"><strong>${c.telefono}</strong>Telefono</div>
-                        <div class="info-item"><strong>${c.direccion || '-'}</strong>Direccion</div>
+                        <div class="info-item"><strong>${escapeHtml(c.id)}</strong>Documento</div>
+                        <div class="info-item"><strong>${escapeHtml(c.usuarioIS)}</strong>Usuario</div>
+                        <div class="info-item"><strong>${escapeHtml(c.email)}</strong>Email</div>
+                        <div class="info-item"><strong>${escapeHtml(c.telefono)}</strong>Telefono</div>
+                        <div class="info-item"><strong>${escapeHtml(c.direccion || '-')}</strong>Direccion</div>
                     </div>
                 `;
+                div.querySelector(".btn-editar").addEventListener("click", () => abrirModal(c.idDB, c.nombres, c.apellidos, c.email, c.telefono, c.direccion));
                 contenedor.appendChild(div);
             });
         })
@@ -74,7 +80,7 @@ function guardarCambios() {
         return;
     }
 
-    fetch(`http://localhost:8080/api/admin/clientes/${idDB}`, {
+    fetch(`/api/admin/clientes/${idDB}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nombres, apellidos, email, telefono, direccion })

@@ -1,11 +1,11 @@
-document.addEventListener("DOMContentLoaded", () => {
+function escapeHtml(value) { return String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]); }document.addEventListener("DOMContentLoaded", () => {
     cargarAlertas();
     setInterval(cargarAlertas, 5000); // cada 5 segundos
 });
 
 function cargarAlertas() {
 
-    fetch("http://localhost:8080/api/alertas")
+    fetch("/api/alertas")
         .then(res => res.json())
         .then(alertas => {
 
@@ -23,8 +23,8 @@ function cargarAlertas() {
                 div.classList.add("alerta-card");
 
                 div.innerHTML = `
-                    <div class="alerta-tipo">${a.tipo}</div>
-                    <div class="alerta-desc">${a.descripcion}</div>
+                    <div class="alerta-tipo">${escapeHtml(a.tipo)}</div>
+                    <div class="alerta-desc">${escapeHtml(a.descripcion)}</div>
                     <div class="alerta-id">#${a.id}</div>
                 `;
 

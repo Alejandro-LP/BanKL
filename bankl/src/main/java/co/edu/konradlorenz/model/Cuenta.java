@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.security.SecureRandom;
 
 @Entity
 public class Cuenta {
@@ -57,7 +57,7 @@ public class Cuenta {
     }
 
     private void generarDatosAleatorios() {
-        Random r = new Random();
+        SecureRandom r = new SecureRandom();
         this.numeroCuenta = 10000000 + r.nextInt(90000000);
         this.numeroTarjeta = String.format("%04d %04d %04d %04d",
             r.nextInt(10000), r.nextInt(10000), r.nextInt(10000), r.nextInt(10000));
@@ -71,8 +71,12 @@ public class Cuenta {
     public int getNumeroCuenta() { return numeroCuenta; }
     public String getPropietario() { return propietario; }
     public double getSaldo() { return saldo; }
-    public String getNumeroTarjeta() { return numeroTarjeta; }
+    public String getNumeroTarjeta() {
+        if (numeroTarjeta == null || numeroTarjeta.length() < 4) return "••••";
+        return "•••• •••• •••• " + numeroTarjeta.substring(numeroTarjeta.length() - 4);
+    }
     public String getFechaExpiracion() { return fechaExpiracion; }
+    @JsonIgnore
     public int getCvv() { return cvv; }
     public boolean isBloqueada() { return bloqueada; }
     public String getTipo() { return tipo; }
@@ -87,7 +91,7 @@ public class Cuenta {
     public boolean consignar(double valor) {
         if (bloqueada || valor <= 0) return false;
         if ("CREDITO".equals(tipo)) {
-            if (valor > saldo) valor = saldo;
+            if (valor > saldo) return false;
             saldo -= valor;
         } else {
             saldo += valor;
