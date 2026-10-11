@@ -1082,6 +1082,123 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible { 
 .dashboard-page .tarjeta-bancaria { transition:transform .25s ease,box-shadow .25s ease; }
 .dashboard-page .tarjeta-bancaria:hover { transform:translateY(-3px); box-shadow:0 22px 42px rgba(23,62,52,.24); }
 @media(max-width:640px) { .dashboard-page .page-heading .section-title { font-size:32px; } }
+
+/* Product polish: quiet surfaces, clear financial hierarchy, and reliable focus states. */
+:root {
+  --line:#d9dfd5;
+  --shadow:0 8px 24px rgba(24,55,47,.045);
+  font-variant-numeric: lining-nums;
+}
+body { -webkit-font-smoothing:antialiased; }
+button,a,input,select { -webkit-tap-highlight-color:transparent; }
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible {
+  outline:3px solid rgba(132,166,73,.48);
+  outline-offset:3px;
+}
+.dashboard-page { --sidebar-width:248px; }
+.dashboard-page > header { box-shadow:none; }
+.dashboard-page .dashboard-sidebar { padding:30px 20px 22px; }
+.dashboard-page .sidebar-brand { margin-bottom:52px; }
+.dashboard-page .tab-btn { min-height:47px; font-size:12px; }
+.dashboard-page .tab-btn.active { background:#e9efe2; }
+.dashboard-page .tab-btn.active:after { background:#9bbd42; }
+.dashboard-page .tab-content { padding-top:44px; }
+.dashboard-page #tab-inicio { padding-top:48px; }
+.dashboard-page .inicio-heading { margin-bottom:35px; }
+.dashboard-page .inicio-heading h1 { font-size:clamp(36px,4vw,50px); }
+.dashboard-page .inicio-heading p,.dashboard-page .page-heading p { font-size:13px; }
+.dashboard-page .inicio-cta { min-height:48px; border-radius:4px; }
+.dashboard-page .resumen-grid { gap:0; margin-bottom:34px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.dashboard-page .resumen-card {
+  min-height:145px; padding:22px 20px!important; border:0!important;
+  border-right:1px solid var(--line)!important; border-radius:0; background:transparent;
+  box-shadow:none;
+}
+.dashboard-page .resumen-card:first-child { padding-left:0!important; }
+.dashboard-page .resumen-card:last-child { border-right:0!important; }
+.dashboard-page .resumen-card.resumen-debito { background:#173e34; }
+.dashboard-page .resumen-card .resumen-icon { display:none; }
+.dashboard-page .resumen-card .label { margin:0 0 14px; font-size:9px; letter-spacing:.13em; }
+.dashboard-page .resumen-card .valor { font-size:clamp(22px,2.3vw,30px); font-variant-numeric:tabular-nums lining-nums; }
+.dashboard-page .resumen-card small { margin-top:9px; font-size:10px; }
+.dashboard-page .inicio-panel { padding:24px; border-radius:5px; box-shadow:none; }
+.dashboard-page .inicio-panel-heading { margin-bottom:19px; }
+.dashboard-page .inicio-panel-heading h2 { font-size:25px; }
+.dashboard-page .accesos-rapidos { gap:0 17px; }
+.dashboard-page .acceso-btn { min-height:69px; padding:10px 0; border:0; border-bottom:1px solid var(--line); border-radius:0; background:transparent; }
+.dashboard-page .acceso-btn:hover { transform:none; border-color:var(--line); background:transparent; }
+.dashboard-page .acceso-btn .acceso-icon { width:31px; height:31px; border-radius:5px; background:transparent; color:#58704e; }
+.dashboard-page .actividad-item { padding:15px 0; }
+.dashboard-page .actividad-copy strong { font-size:12px; }
+.dashboard-page .actividad-copy small,.dashboard-page .actividad-fecha { font-size:10px; }
+.dashboard-page .page-heading { margin-bottom:34px; }
+.dashboard-page .form-card {
+  padding:25px 26px 26px; border:1px solid var(--line); border-radius:5px;
+  background:var(--card); box-shadow:none;
+}
+.dashboard-page .form-card h3 { margin-bottom:18px; font-family:Arial,sans-serif; font-size:15px; font-weight:650; letter-spacing:-.01em; }
+.dashboard-page .form-grid { gap:12px; }
+.dashboard-page .form-grid input,.dashboard-page .form-grid select,.dashboard-page select {
+  min-height:48px; padding:12px 14px!important; border:1px solid #d3dbd0!important;
+  border-radius:4px!important; background:var(--bg)!important; font-size:13px!important;
+}
+.dashboard-page .form-grid input:focus,.dashboard-page .form-grid select:focus {
+  border-color:#819a67!important; box-shadow:0 0 0 3px rgba(129,154,103,.13);
+}
+.dashboard-page .btn-accion { min-height:43px; padding:10px 18px!important; border-radius:4px!important; font-size:12px; }
+.dashboard-page .items-grid { gap:12px; }
+.dashboard-page .item-card,.dashboard-page .noti-item { border-radius:4px; box-shadow:none; }
+.dashboard-page .badge-estado { padding:5px 8px; border-radius:3px; }
+.dashboard-page .cuenta-wrapper { gap:11px; }
+.dashboard-page .tarjeta-bancaria {
+  height:220px; border-radius:5px; background:#173e34; box-shadow:none;
+}
+.dashboard-page .tarjeta-credito { background:#35453c; }
+.dashboard-page .tarjeta-bancaria::before { border-color:rgba(200,238,87,.28); box-shadow:0 0 0 27px rgba(200,238,87,.025),0 0 0 62px rgba(200,238,87,.02); }
+.dashboard-page .tarjeta-bancaria::after { display:none; }
+.dashboard-page .tarjeta-bancaria:hover { transform:translateY(-2px); box-shadow:0 10px 22px rgba(23,62,52,.12); }
+.dashboard-page .tarjeta-info { border-radius:4px; box-shadow:none; }
+.dashboard-page .tarjeta-acciones .btn-accion { min-height:38px; border-radius:4px!important; font-size:10px; }
+.dashboard-page .empty { padding:18px 0; }
+.dashboard-page .dashboard-footer { font-size:11px; }
+.dark .dashboard-page .tab-btn.active { color:#e8f0df; background:#253629; }
+.dark .dashboard-page .resumen-grid { border-color:var(--line); }
+.dark .dashboard-page .resumen-card { border-color:var(--line)!important; }
+.dark .dashboard-page .resumen-card.resumen-debito { border-color:#315e4a!important; }
+.dark .dashboard-page .acceso-btn { background:transparent; }
+.dark .dashboard-page .acceso-btn:hover { background:rgba(255,255,255,.025); }
+.dark .dashboard-page .form-card { background:var(--card); }
+.dark .dashboard-page .form-grid input,.dark .dashboard-page .form-grid select,.dark .dashboard-page select { border-color:#35443b!important; background:#14201a!important; }
+@media(max-width:900px) {
+  .dashboard-page .resumen-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .dashboard-page .resumen-card:nth-child(2) { border-right:0!important; }
+  .dashboard-page .resumen-card:nth-child(-n+2) { border-bottom:1px solid var(--line)!important; }
+  .dashboard-page .resumen-card:first-child { padding-left:20px!important; }
+}
+@media(max-width:640px) {
+  .dashboard-page .dashboard-sidebar { box-shadow:0 -3px 12px rgba(28,47,32,.04); }
+  .dashboard-page .tab-btn { min-height:56px; }
+  .dashboard-page .tab-btn.active { background:transparent; }
+  .dashboard-page .tab-content { padding-top:25px; }
+  .dashboard-page #tab-inicio { padding-top:28px; }
+  .dashboard-page .inicio-heading { gap:16px; }
+  .dashboard-page .inicio-heading h1 { font-size:35px; }
+  .dashboard-page .resumen-card { min-height:126px; padding:16px 12px!important; }
+  .dashboard-page .resumen-card:first-child { padding-left:12px!important; }
+  .dashboard-page .resumen-card .label { margin-bottom:9px; font-size:8px; }
+  .dashboard-page .resumen-card .valor { font-size:clamp(18px,5vw,22px); }
+  .dashboard-page .resumen-card small { font-size:9px; }
+  .dashboard-page .inicio-lower { gap:12px; }
+  .dashboard-page .inicio-panel { padding:18px 15px; }
+  .dashboard-page .accesos-rapidos { grid-template-columns:1fr; }
+  .dashboard-page .form-card { padding:19px 15px; }
+  .dashboard-page .form-grid { grid-template-columns:1fr; }
+  .dashboard-page .tarjeta-bancaria { height:210px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  html { scroll-behavior:auto; }
+  *,*:before,*:after { animation:none!important; transition:none!important; }
+}
 /* BanKL admin area */
 .admin-page { background:var(--bg); }
 .admin-page .site-header { min-height:78px; padding:12px clamp(20px,6vw,86px); background:var(--bg); box-shadow:none; }
