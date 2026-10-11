@@ -152,10 +152,18 @@ El servidor inicia en: `http://localhost:8080`
 |---|---|---|
 | `/html/Login.html` | Inicio de sesion | Todos |
 | `/html/registro.html` | Registro de nuevo cliente | Publico |
-| `/html/dashboard.html` | Panel principal del cliente | ClienteNatural |
+| `/html/dashboard.html` | Inicio y resumen financiero del cliente | ClienteNatural |
+| `/html/dashboard.html?seccion=tarjetas` | Consulta y gestion de tarjetas | ClienteNatural |
+| `/html/dashboard.html?seccion=transferencias` | Nueva transferencia e historial | ClienteNatural |
+| `/html/dashboard.html?seccion=beneficiarios` | Gestion de beneficiarios | ClienteNatural |
+| `/html/dashboard.html?seccion=prestamos` | Solicitud y seguimiento de prestamos | ClienteNatural |
+| `/html/dashboard.html?seccion=inversiones` | Creacion y seguimiento de inversiones | ClienteNatural |
+| `/html/dashboard.html?seccion=notificaciones` | Avisos y actividad de la cuenta | ClienteNatural |
 | `/html/admin.html` | Panel de administracion | ClienteAdmin |
 
 ---
+
+El dashboard del cliente mantiene una URL por apartado mediante el parametro `seccion`. Por ejemplo, ``/html/dashboard.html?seccion=tarjetas``. La navegacion se adapta al escritorio y al movil, y el historial del navegador permite regresar a la vista anterior.
 
 ## API REST - Endpoints
 
@@ -226,7 +234,10 @@ El servidor inicia en: `http://localhost:8080`
 - Gestion de beneficiarios
 - Notificaciones automaticas por cada operacion
 - Panel de administrador con edicion de clientes
-- Modo oscuro en el frontend
+- Dashboard organizado en vistas independientes para inicio, tarjetas, transferencias, beneficiarios, prestamos, inversiones y notificaciones
+- Navegacion adaptable: barra lateral en escritorio, menu inferior en movil y enlaces directos por seccion
+- Identidad visual BanKL con logotipo vectorial compartido y tarjetas en tonos verde bosque, marfil y lima
+- Modo oscuro persistente en el dashboard
 
 ---
 
