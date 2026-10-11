@@ -151,6 +151,19 @@ function cargarNotificaciones() {
             const noLeidas = data.filter(n=>!n.leida).length;
             badge.textContent = noLeidas||"";
             badge.style.display = noLeidas?"inline":"none";
+            const inicioBadge = document.getElementById("inicioBadge");
+            if (inicioBadge) inicioBadge.textContent = noLeidas ? `(${noLeidas})` : "";
+            const actividad = document.getElementById("inicioActividad");
+            if (actividad) {
+                actividad.innerHTML = data.length === 0
+                    ? '<p class="actividad-vacia">Aún no tienes avisos. Aquí verás las novedades de tu cuenta.</p>'
+                    : data.slice(0, 3).map(n => `
+                        <button class="actividad-item ${n.leida ? 'leida' : ''}" onclick="irTab('notificaciones')">
+                            <span class="actividad-punto"></span>
+                            <span class="actividad-copy"><strong>${escapeHtml(n.titulo)}</strong><small>${escapeHtml(n.mensaje)}</small></span>
+                            <span class="actividad-fecha">${new Date(n.fecha).toLocaleDateString("es-CO", {day:"numeric",month:"short"})}</span>
+                        </button>`).join("");
+            }
             document.getElementById("listaNoti").innerHTML = data.length===0
                 ? "<p class='empty'>Sin notificaciones</p>"
                 : data.map(n=>`

@@ -36,29 +36,35 @@
 <!-- INICIO -->
 <div class="tab-content active" id="tab-inicio">
     <div class="bienvenida-section">
-        <div class="bienvenida-card">
-            <span class="welcome-kicker">TU ESPACIO, A TU RITMO</span>
-            <h1 id="saludoNombre">¡Bienvenido a BanKL!</h1>
-            <p>Una vista completa de tus cuentas y de lo que tienes en marcha.</p>
+        <div class="inicio-heading">
+            <div><span class="inicio-eyebrow">RESUMEN DE TU CUENTA</span><h1 id="saludoNombre">¡Bienvenido a BanKL!</h1><p>Todo lo que necesitas para tener tus finanzas al día.</p></div>
+            <button class="inicio-cta" onclick="irTab('transferencias')"><span>↗</span> Nueva transferencia</button>
         </div>
         <div class="resumen-grid" id="resumenGrid">
-            <div class="resumen-card"><div class="label">SALDO DÉBITO</div><div class="valor" id="resumenDebito">$0.00</div></div>
-            <div class="resumen-card"><div class="label">CUPO CRÉDITO</div><div class="valor" id="resumenCredito">$0.00</div></div>
-            <div class="resumen-card"><div class="label">INVERSIONES</div><div class="valor" id="resumenInversiones">$0.00</div></div>
-            <div class="resumen-card"><div class="label">PRÉSTAMOS</div><div class="valor" id="resumenPrestamos">$0</div></div>
+            <div class="resumen-card resumen-debito"><span class="resumen-icon">$</span><div class="label">SALDO DÉBITO</div><div class="valor" id="resumenDebito">$0.00</div><small>Disponible en tu cuenta</small></div>
+            <div class="resumen-card"><span class="resumen-icon">↗</span><div class="label">CUPO DISPONIBLE</div><div class="valor" id="resumenCredito">$0.00</div><small>En tu tarjeta de crédito</small></div>
+            <div class="resumen-card"><span class="resumen-icon">◈</span><div class="label">INVERSIONES</div><div class="valor" id="resumenInversiones">$0.00</div><small>Capital activo</small></div>
+            <div class="resumen-card"><span class="resumen-icon">⌁</span><div class="label">PRÉSTAMOS</div><div class="valor" id="resumenPrestamos">$0</div><small>Productos activos</small></div>
         </div>
-        <h3>Accesos rápidos</h3>
-        <div class="accesos-rapidos">
-            <button class="acceso-btn" onclick="irTab('tarjetas')"><span>01</span>Mis tarjetas</button>
-            <button class="acceso-btn" onclick="irTab('transferencias')"><span>02</span>Transferir</button>
-            <button class="acceso-btn" onclick="irTab('prestamos')"><span>03</span>Préstamos</button>
-            <button class="acceso-btn" onclick="irTab('inversiones')"><span>04</span>Inversiones</button>
-            <button class="acceso-btn" onclick="irTab('beneficiarios')"><span>05</span>Beneficiarios</button>
-            <button class="acceso-btn" onclick="irTab('notificaciones')"><span>06</span>Avisos</button>
+        <div class="inicio-lower">
+            <section class="inicio-panel inicio-shortcuts">
+                <div class="inicio-panel-heading"><div><span class="inicio-eyebrow">A UN TOQUE</span><h2>Accesos rápidos</h2></div></div>
+                <div class="accesos-rapidos">
+                    <button class="acceso-btn" onclick="irTab('tarjetas')"><span class="acceso-icon">▤</span><span class="acceso-copy"><strong>Mis tarjetas</strong><small>Consulta saldos y movimientos</small></span><b>↗</b></button>
+                    <button class="acceso-btn" onclick="irTab('transferencias')"><span class="acceso-icon">⇄</span><span class="acceso-copy"><strong>Transferir</strong><small>Envía dinero fácilmente</small></span><b>↗</b></button>
+                    <button class="acceso-btn" onclick="irTab('prestamos')"><span class="acceso-icon">⌁</span><span class="acceso-copy"><strong>Préstamos</strong><small>Revisa tus cuotas activas</small></span><b>↗</b></button>
+                    <button class="acceso-btn" onclick="irTab('inversiones')"><span class="acceso-icon">◈</span><span class="acceso-copy"><strong>Inversiones</strong><small>Haz crecer tu dinero</small></span><b>↗</b></button>
+                    <button class="acceso-btn" onclick="irTab('beneficiarios')"><span class="acceso-icon">♧</span><span class="acceso-copy"><strong>Beneficiarios</strong><small>Administra tus contactos</small></span><b>↗</b></button>
+                </div>
+            </section>
+            <section class="inicio-panel inicio-actividad">
+                <div class="inicio-panel-heading"><div><span class="inicio-eyebrow">AL DÍA</span><h2>Actividad reciente</h2></div><button class="actividad-link" onclick="irTab('notificaciones')">Ver avisos <span id="inicioBadge"></span> →</button></div>
+                <div id="inicioActividad" class="inicio-actividad-list"><p class="actividad-vacia">Tus movimientos y avisos aparecerán aquí.</p></div>
+                <button class="actividad-todas" onclick="irTab('notificaciones')">Ir a notificaciones <span>→</span></button>
+            </section>
         </div>
     </div>
 </div>
-
 <!-- TARJETAS -->
 <div class="tab-content" id="tab-tarjetas">
     <h2 class="section-title"> Mis Tarjetas</h2>
