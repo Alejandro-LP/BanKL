@@ -71,13 +71,13 @@ function cargarCuentas() {
                         `}
                         <div class="tarjeta-acciones">
                             ${esCredito ? `
-                                <button class="btn-accion btn-pagar" onclick="pagar(${cuenta.id})">💸 Pagar</button>
-                                <button class="btn-accion btn-avance" onclick="avance(${cuenta.id})">💳 Avance</button>
+                                <button class="btn-accion btn-pagar" onclick="pagar(${cuenta.id})">Pagar</button>
+                                <button class="btn-accion btn-avance" onclick="avance(${cuenta.id})">Avance</button>
                             ` : `
-                                <button class="btn-accion btn-ingresar" onclick="ingresar(${cuenta.id})">➕ Ingresar</button>
-                                <button class="btn-accion btn-retirar" onclick="retirar(${cuenta.id})">➖ Retirar</button>
+                                <button class="btn-accion btn-ingresar" onclick="ingresar(${cuenta.id})">Ingresar</button>
+                                <button class="btn-accion btn-retirar" onclick="retirar(${cuenta.id})">Retirar</button>
                             `}
-                            <button class="btn-accion btn-cambiar" onclick="cambiarTarjeta(${cuenta.id})">🔄 Cambiar</button>
+                            <button class="btn-accion btn-cambiar" onclick="cambiarTarjeta(${cuenta.id})">Cambiar</button>
                         </div>
                     </div>
                 `;

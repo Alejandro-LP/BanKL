@@ -2,11 +2,12 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Alertas - BanKL</title>
     <link rel="stylesheet" href="../css/styles.css">
 </head>
 
-<body>
+<body class="bank-subpage alerts-page">
 
 <header>
     <div>
@@ -18,9 +19,10 @@
 
     <div class="buttons">
         <a href="dashboard.html"><button>Volver</button></a>
-        <button onclick="toggleDark()" class="dark-btn">🌙</button>
+        <button onclick="toggleDark()" class="dark-btn">Tema</button>
     </div>
 </header>
+<section class="subpage-heading"><span class="inicio-eyebrow">ACTIVIDAD DE TU CUENTA</span><h1>Alertas</h1><p>Avisos recientes para mantenerte al tanto de lo que ocurre en tu cuenta.</p></section>
 
 <main class="container">
     <div id="listaAlertas" class="lista-alertas"></div>
