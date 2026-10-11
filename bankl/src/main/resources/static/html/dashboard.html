@@ -7,10 +7,11 @@
     <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body class="dashboard-page">
+<div class="dashboard-shell">
 <header>
     <div class="dashboard-header">
         <div>
-            <div class="logo"><span>Ban</span><span>KL</span></div>
+            <a class="dashboard-home-mark" href="dashboard.html?seccion=inicio" aria-label="BanKL, inicio"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 3 35 11.5v17L20 37 5 28.5v-17L20 3Z"/><path d="M14 27V13h4v5l5-5h5l-6 6 6 8h-5l-4-5-1 1v4h-4Z"/></svg></span></a>
             <small id="bienvenida">Panel principal</small>
         </div>
         <div>
@@ -22,19 +23,26 @@
         </div>
     </div>
 </header>
+<aside class="dashboard-sidebar" aria-label="Navegación de cuenta">
+    <a class="brand sidebar-brand" href="index.html" aria-label="BanKL, inicio"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 3 35 11.5v17L20 37 5 28.5v-17L20 3Z"/><path d="M14 27V13h4v5l5-5h5l-6 6 6 8h-5l-4-5-1 1v4h-4Z"/></svg></span><span class="brand-word">Ban<b>KL</b></span></a>
+    <span class="sidebar-caption">TU ESPACIO</span>
+    <nav class="tabs" aria-label="Secciones de tu cuenta">
+        <button class="tab-btn active" id="btn-inicio" data-tab="inicio" onclick="irTab('inicio')"><span>⌂</span> Inicio</button>
+        <button class="tab-btn" id="btn-tarjetas" data-tab="tarjetas" onclick="irTab('tarjetas')"><span>▤</span> Tarjetas</button>
+        <button class="tab-btn" id="btn-transferencias" data-tab="transferencias" onclick="irTab('transferencias')"><span>⇄</span> Transferencias</button>
+        <button class="tab-btn" id="btn-beneficiarios" data-tab="beneficiarios" onclick="irTab('beneficiarios')"><span>♧</span> Beneficiarios</button>
+        <button class="tab-btn" id="btn-prestamos" data-tab="prestamos" onclick="irTab('prestamos')"><span>⌁</span> Préstamos</button>
+        <button class="tab-btn" id="btn-inversiones" data-tab="inversiones" onclick="irTab('inversiones')"><span>◈</span> Inversiones</button>
+        <button class="tab-btn" id="btn-notificaciones" data-tab="notificaciones" onclick="irTab('notificaciones')"><span>◉</span> Notificaciones <span id="sidebarBadge"></span></button>
+    </nav>
+    <div class="sidebar-bottom"><span class="sidebar-mark">✳</span><span>Tu dinero,<br>más claro.</span></div>
+</aside>
 
-<nav class="tabs" aria-label="Secciones de tu cuenta">
-    <button class="tab-btn active" id="btn-inicio"         onclick="irTab('inicio')"> Inicio</button>
-    <button class="tab-btn"        id="btn-tarjetas"       onclick="irTab('tarjetas')"> Tarjetas</button>
-    <button class="tab-btn"        id="btn-prestamos"      onclick="irTab('prestamos')"> Préstamos</button>
-    <button class="tab-btn"        id="btn-inversiones"    onclick="irTab('inversiones')"> Inversiones</button>
-    <button class="tab-btn"        id="btn-transferencias" onclick="irTab('transferencias')">↗ Transferencias</button>
-    <button class="tab-btn"        id="btn-beneficiarios"  onclick="irTab('beneficiarios')"> Beneficiarios</button>
-    <button class="tab-btn"        id="btn-notificaciones" onclick="irTab('notificaciones')"> Notificaciones</button>
-</nav>
+
 
 <!-- INICIO -->
-<div class="tab-content active" id="tab-inicio">
+<main class="dashboard-main">
+<div class="tab-content active" id="tab-inicio" data-page="inicio">
     <div class="bienvenida-section">
         <div class="inicio-heading">
             <div><span class="inicio-eyebrow">RESUMEN DE TU CUENTA</span><h1 id="saludoNombre">¡Bienvenido a BanKL!</h1><p>Todo lo que necesitas para tener tus finanzas al día.</p></div>
@@ -66,14 +74,14 @@
     </div>
 </div>
 <!-- TARJETAS -->
-<div class="tab-content" id="tab-tarjetas">
-    <h2 class="section-title"> Mis Tarjetas</h2>
+<div class="tab-content" id="tab-tarjetas" data-page="tarjetas">
+    <div class="page-heading"><span class="inicio-eyebrow">TUS PRODUCTOS</span><h1 class="section-title">Mis tarjetas</h1><p>Consulta tus tarjetas, saldos y acciones disponibles.</p></div>
     <div id="contenedorCuentasDash"><p class="empty">Preparando tu espacio…</p></div>
 </div>
 
 <!-- PRÉSTAMOS -->
-<div class="tab-content" id="tab-prestamos">
-    <h2 class="section-title"> Mis Préstamos</h2>
+<div class="tab-content" id="tab-prestamos" data-page="prestamos">
+    <div class="page-heading"><span class="inicio-eyebrow">FINANCIACIÓN</span><h1 class="section-title">Mis préstamos</h1><p>Administra tus solicitudes y conoce el estado de tus cuotas.</p></div>
     <div class="form-card">
         <h3>Solicitar préstamo</h3>
         <div class="form-grid">
@@ -87,8 +95,8 @@
 </div>
 
 <!-- INVERSIONES -->
-<div class="tab-content" id="tab-inversiones">
-    <h2 class="section-title"> Mis Inversiones</h2>
+<div class="tab-content" id="tab-inversiones" data-page="inversiones">
+    <div class="page-heading"><span class="inicio-eyebrow">HAZ CRECER TU DINERO</span><h1 class="section-title">Mis inversiones</h1><p>Consulta tu capital activo o crea una nueva inversión.</p></div>
     <div class="form-card">
         <h3>Nueva inversión</h3>
         <div class="form-grid">
@@ -103,8 +111,8 @@
 </div>
 
 <!-- TRANSFERENCIAS -->
-<div class="tab-content" id="tab-transferencias">
-    <h2 class="section-title">↗ Transferencias</h2>
+<div class="tab-content" id="tab-transferencias" data-page="transferencias">
+    <div class="page-heading"><span class="inicio-eyebrow">MUEVE TU DINERO</span><h1 class="section-title">Transferencias</h1><p>Envía dinero y consulta el historial de tus transferencias.</p></div>
     <div class="form-card">
         <h3>Nueva transferencia</h3>
         <div class="form-grid">
@@ -120,8 +128,8 @@
 </div>
 
 <!-- BENEFICIARIOS -->
-<div class="tab-content" id="tab-beneficiarios">
-    <h2 class="section-title"> Mis Beneficiarios</h2>
+<div class="tab-content" id="tab-beneficiarios" data-page="beneficiarios">
+    <div class="page-heading"><span class="inicio-eyebrow">CONTACTOS</span><h1 class="section-title">Mis beneficiarios</h1><p>Guarda y administra las cuentas a las que transfieres.</p></div>
     <div class="form-card">
         <h3>Agregar beneficiario</h3>
         <div class="form-grid">
@@ -136,12 +144,14 @@
 </div>
 
 <!-- NOTIFICACIONES -->
-<div class="tab-content" id="tab-notificaciones">
-    <h2 class="section-title"> Notificaciones</h2>
+<div class="tab-content" id="tab-notificaciones" data-page="notificaciones">
+    <div class="page-heading"><span class="inicio-eyebrow">NOVEDADES DE TU CUENTA</span><h1 class="section-title">Notificaciones</h1><p>Revisa tus avisos y mantente al día.</p></div>
     <div id="listaNoti"><p class="empty">Sin notificaciones</p></div>
 </div>
 
-<footer><div>BanKL</div></footer>
+</main>
+<footer class="dashboard-footer"><div>BanKL <span>· Tu dinero, más claro.</span></div></footer>
+</div>
 <script src="../js/app.js"></script>
 <script src="../js/dashboard.js"></script>
 </body>

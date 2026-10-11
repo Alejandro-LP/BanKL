@@ -2,6 +2,7 @@ const usuario = localStorage.getItem("usuario");
 const nombre  = localStorage.getItem("nombre");
 
 document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem("bankl-theme") === "dark") document.body.classList.add("dark");
     if (!usuario || localStorage.getItem("tipo") !== "ClienteNatural") {
         window.location.href = "/html/Login.html";
         return;
@@ -11,27 +12,39 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("saludoNombre").textContent = "¡Bienvenido, " + nombre.split(" ")[0] + "!";
     }
     cargarNotificaciones();
-    cargarResumen();
+    cargarSeccionDesdeUrl();
 });
 
 function escapeHtml(value) {
     return String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[char]);
 }
 // ===== TABS =====
-function irTab(tab) {
-    document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
-    document.querySelectorAll(".tab-btn").forEach(t => t.classList.remove("active"));
-    document.getElementById("tab-" + tab).classList.add("active");
-    document.getElementById("btn-" + tab).classList.add("active");
-    if (tab === "tarjetas")        cargarCuentasDash();
-    if (tab === "prestamos")       cargarPrestamos();
-    if (tab === "inversiones")     cargarInversiones();
-    if (tab === "beneficiarios")   cargarBeneficiarios();
-    if (tab === "transferencias")  { cargarTransferencias(); cargarCuentasParaTransferencia(); }
-    if (tab === "notificaciones")  cargarNotificaciones();
-    if (tab === "inicio")          cargarResumen();
+function irTab(tab, updateHistory = true) {
+    const paginas = Array.from(document.querySelectorAll(".tab-content"));
+    const seleccionada = document.getElementById("tab-" + tab);
+    if (!seleccionada) return;
+
+    paginas.forEach(pagina => pagina.classList.toggle("active", pagina === seleccionada));
+    document.querySelectorAll(".tab-btn").forEach(boton => boton.classList.toggle("active", boton.dataset.tab === tab));
+    if (updateHistory) history.pushState({ tab }, "", `?seccion=${encodeURIComponent(tab)}`);
+
+    if (tab === "tarjetas") cargarCuentasDash();
+    if (tab === "prestamos") cargarPrestamos();
+    if (tab === "inversiones") cargarInversiones();
+    if (tab === "beneficiarios") cargarBeneficiarios();
+    if (tab === "transferencias") { cargarTransferencias(); cargarCuentasParaTransferencia(); }
+    if (tab === "notificaciones") cargarNotificaciones();
+    if (tab === "inicio") cargarResumen();
+    window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+function cargarSeccionDesdeUrl() {
+    const solicitada = new URLSearchParams(window.location.search).get("seccion") || "inicio";
+    const existente = document.getElementById("tab-" + solicitada) ? solicitada : "inicio";
+    irTab(existente, false);
+}
+
+window.addEventListener("popstate", cargarSeccionDesdeUrl);
 // ===== RESUMEN INICIO =====
 function cargarResumen() {
     fetch(`/clientes/cuentas?usuario=${usuario}`)
@@ -151,6 +164,8 @@ function cargarNotificaciones() {
             const noLeidas = data.filter(n=>!n.leida).length;
             badge.textContent = noLeidas||"";
             badge.style.display = noLeidas?"inline":"none";
+            const sidebarBadge = document.getElementById("sidebarBadge");
+            if (sidebarBadge) sidebarBadge.textContent = noLeidas ? String(noLeidas) : "";
             const inicioBadge = document.getElementById("inicioBadge");
             if (inicioBadge) inicioBadge.textContent = noLeidas ? `(${noLeidas})` : "";
             const actividad = document.getElementById("inicioActividad");
@@ -342,4 +357,7 @@ function cerrarSesion() {
         window.location.href="/html/Login.html";
     });
 }
-function toggleDark() { document.body.classList.toggle("dark"); }
+function toggleDark() {
+    document.body.classList.toggle("dark");
+    localStorage.setItem("bankl-theme", document.body.classList.contains("dark") ? "dark" : "light");
+}

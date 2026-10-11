@@ -980,3 +980,105 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible { 
 .feedback-success { color:#345333; border-color:#9cbf55; background:#edf2df; }
 .dark .feedback-error { color:#ffd3c2; border-color:#dd8868; background:#422c25; }
 .dark .feedback-success { color:#d9edb5; border-color:#a6ce4c; background:#253525; }
+/* BanKL brand mark, shared across public and account pages */
+.brand { display:inline-flex; align-items:center; gap:10px; text-decoration:none; }
+.brand-mark { display:inline-flex; width:34px; height:34px; flex:0 0 34px; align-items:center; justify-content:center; }
+.brand-mark svg { display:block; width:100%; height:100%; overflow:visible; }
+.brand-mark svg path:first-child { fill:#173e34; }
+.brand-mark svg path:last-child { fill:#c8ee57; }
+.brand-word { color:#173e34; font-size:22px; font-weight:750; letter-spacing:-.08em; }
+.brand-word b { color:#557442; font-weight:750; }
+.dark .brand-word { color:#f3f2e9; }
+.dark .brand-word b { color:#c8ee57; }
+/* Dashboard becomes a persistent side navigation with one full page per section */
+.dashboard-page { display:block; --sidebar-width:244px; }
+.dashboard-shell { min-height:100vh; padding-left:var(--sidebar-width); }
+.dashboard-page > header { position:sticky; top:0; z-index:20; min-height:75px; padding:12px clamp(20px,4vw,54px); }
+.dashboard-page .dashboard-header { display:flex; max-width:1320px; align-items:center; justify-content:space-between; gap:20px; }
+.dashboard-home-mark { display:none; }
+.dashboard-page .dashboard-header > div:first-child { display:flex; align-items:center; gap:13px; }
+.dashboard-page .dashboard-header > div:first-child small { padding-left:13px; border-left:1px solid var(--line); }
+.dashboard-page .dashboard-sidebar { position:fixed; inset:0 auto 0 0; z-index:30; display:flex; width:var(--sidebar-width); flex-direction:column; padding:27px 18px 21px; border-right:1px solid var(--line); background:var(--card); }
+.dashboard-page .sidebar-brand { margin:0 0 46px 9px; }
+.dashboard-page .sidebar-caption { margin:0 0 12px 12px; color:#93a08e; font-size:9px; font-weight:700; letter-spacing:.16em; }
+.dashboard-page .tabs { position:static; display:flex; flex-direction:column; gap:5px; overflow:visible; margin:0; padding:0; border:0; background:transparent; }
+.dashboard-page .tab-btn { display:flex; min-height:45px; align-items:center; gap:12px; padding:0 12px; border:0; border-radius:7px; color:#718078; text-align:left; font-size:11px; }
+.dashboard-page .tab-btn > span:first-child { display:grid; width:23px; place-items:center; color:#7a9270; font-size:16px; }
+.dashboard-page .tab-btn:hover { color:#173e34; background:#f2f5eb; }
+.dashboard-page .tab-btn.active { color:#173e34; background:#edf2e3; font-weight:700; }
+.dashboard-page .tab-btn.active:after { inset:8px auto 8px 0; width:3px; height:auto; border-radius:0 3px 3px 0; background:#a6ce4c; }
+.dashboard-page #sidebarBadge { display:grid; min-width:19px; height:19px; place-items:center; margin-left:auto; padding:0 5px; border-radius:10px; color:#fff; background:#557442; font-size:9px; }
+.dashboard-page #sidebarBadge:empty { display:none; }
+.dashboard-page .sidebar-bottom { display:flex; align-items:center; gap:11px; margin-top:auto; padding:17px 10px 0; border-top:1px solid var(--line); color:#899487; font-size:10px; line-height:1.5; }
+.dashboard-page .sidebar-mark { color:#89a35d; font-size:21px; }
+.dashboard-page .dashboard-main { width:100%; max-width:1500px; min-height:calc(100vh - 137px); margin:0 auto; }
+.dashboard-page .tab-content { display:none; min-height:calc(100vh - 137px); padding:40px clamp(20px,4vw,64px) 70px; }
+.dashboard-page .tab-content.active { display:block; }
+.dashboard-page .tab-content:not(#tab-inicio) { width:100%; }
+.dashboard-page .tab-content:not(#tab-inicio) > .section-title { max-width:1100px; margin:0 auto 26px; padding-bottom:20px; border-bottom:1px solid var(--line); }
+.dashboard-page .form-card,.dashboard-page .items-grid,.dashboard-page #contenedorCuentasDash,.dashboard-page #listaNoti { width:min(1100px,100%); margin-right:auto; margin-left:auto; }
+.dashboard-page #contenedorCuentasDash { display:flex; flex-wrap:wrap; justify-content:flex-start; }
+.dashboard-page .cuenta-wrapper { width:min(380px,100%); }
+.dashboard-page .dashboard-footer { padding:18px clamp(20px,4vw,64px); border-top:1px solid var(--line); color:#899487; background:var(--bg); font-size:10px; }
+.dashboard-page .dashboard-footer span { color:#a1aa9d; }
+/* Bank cards follow BanKL's forest, ivory and lime identity */
+.dashboard-page .tarjeta-bancaria { height:225px; padding:24px 25px; border:1px solid rgba(255,255,255,.16); border-radius:13px; background:linear-gradient(128deg,#173e34 0%,#245542 57%,#355f43 100%); box-shadow:0 18px 38px rgba(23,62,52,.19); }
+.dashboard-page .tarjeta-bancaria::before { top:-103px; right:-36px; width:230px; height:230px; border:1px solid rgba(200,238,87,.38); background:transparent; box-shadow:0 0 0 20px rgba(200,238,87,.035),0 0 0 48px rgba(200,238,87,.035); }
+.dashboard-page .tarjeta-bancaria::after { right:95px; bottom:-155px; width:230px; height:230px; border:1px solid rgba(255,255,255,.09); background:transparent; }
+.dashboard-page .tarjeta-credito { background:linear-gradient(128deg,#253a31 0%,#314b38 60%,#57613b 100%); }
+.dashboard-page .tarjeta-top,.dashboard-page .chip,.dashboard-page .tarjeta-numero,.dashboard-page .tarjeta-bottom { position:relative; z-index:1; }
+.dashboard-page .banco-nombre { display:flex; align-items:center; gap:8px; color:#f5f2e9; font-size:17px; font-weight:750; letter-spacing:-.06em; }
+.dashboard-page .banco-nombre::before { width:23px; height:23px; border:1px solid rgba(200,238,87,.8); border-radius:7px; color:#c8ee57; content:"✳"; font-size:14px; line-height:21px; text-align:center; }
+.dashboard-page .tarjeta-tipo { padding:6px 9px; border:1px solid rgba(255,255,255,.22); border-radius:20px; color:#e5edda; font-size:8px; letter-spacing:.14em; }
+.dashboard-page .chip { width:38px; height:28px; margin:7px 0 0; border:1px solid rgba(244,223,159,.7); border-radius:6px; background:linear-gradient(135deg,#eee3ba,#cbbd8c); }
+.dashboard-page .chip-inner { border-color:rgba(105,95,64,.35); }
+.dashboard-page .tarjeta-numero { color:#f4f2e9; font-size:17px; letter-spacing:.18em; text-shadow:0 1px 6px rgba(0,0,0,.12); }
+.dashboard-page .tarjeta-label { color:rgba(237,241,224,.63); font-size:7px; letter-spacing:.12em; }
+.dashboard-page .tarjeta-value { color:#f5f2e9; font-size:9px; letter-spacing:.045em; }
+.dashboard-page .tarjeta-info { padding:17px 18px; border-radius:9px; box-shadow:0 8px 24px rgba(23,62,52,.045); }
+.dashboard-page .tarjeta-acciones { flex-wrap:wrap; gap:7px; padding-top:13px; }
+.dashboard-page .tarjeta-acciones .btn-accion { min-height:34px; padding:7px 10px!important; border-radius:5px!important; font-size:9px; }
+.dashboard-page .tarjeta-acciones .btn-cambiar { color:#416138!important; border-color:#d6dfc9!important; background:#f1f4eb!important; }
+.dark .dashboard-page .dashboard-sidebar { background:#111c2d; }
+.dark .dashboard-page .tab-btn:hover,.dark .dashboard-page .tab-btn.active { color:#e8f0df; background:#253629; }
+.dark .dashboard-page .tab-btn.active:after { background:#c8ee57; }
+.dark .dashboard-page .tarjeta-info { background:#111c2d; }
+.dark .dashboard-page .tarjeta-bancaria { box-shadow:0 18px 38px rgba(0,0,0,.28); }
+@media(max-width:900px) {
+  .dashboard-page { --sidebar-width:205px; }
+  .dashboard-page .dashboard-sidebar { padding-right:13px; padding-left:13px; }
+  .dashboard-page .tab-content { padding-right:24px; padding-left:24px; }
+}
+@media(max-width:640px) {
+  .dashboard-page { --sidebar-width:0px; padding-bottom:68px; }
+  .dashboard-shell { padding-left:0; }
+  .dashboard-page > header { min-height:65px; padding:9px 13px; }
+  .dashboard-page .dashboard-header > div:first-child { gap:0; }
+  .dashboard-page .dashboard-home-mark { display:inline-flex; }
+  .dashboard-page .dashboard-header > div:first-child small { display:none; }
+  .dashboard-page header .dashboard-header > div:last-child { gap:5px; }
+  .dashboard-page .dashboard-header .noti-btn { min-width:38px; overflow:hidden; font-size:0; }
+  .dashboard-page .dashboard-header .noti-btn::before { content:"◉"; font-size:15px; }
+  .dashboard-page .dashboard-sidebar { inset:auto 0 0; width:100%; height:66px; flex-direction:row; padding:5px 4px max(5px,env(safe-area-inset-bottom)); border-top:1px solid var(--line); border-right:0; background:var(--card); box-shadow:0 -6px 20px rgba(28,47,32,.06); }
+  .dashboard-page .sidebar-brand,.dashboard-page .sidebar-caption,.dashboard-page .sidebar-bottom { display:none; }
+  .dashboard-page .tabs { width:100%; flex-direction:row; justify-content:space-around; gap:0; overflow-x:auto; }
+  .dashboard-page .tab-btn { min-width:57px; min-height:54px; flex:1 0 57px; flex-direction:column; justify-content:center; gap:2px; padding:4px 3px; border-radius:5px; font-size:8px; }
+  .dashboard-page .tab-btn > span:first-child { width:auto; font-size:15px; }
+  .dashboard-page .tab-btn.active:after { inset:auto 15px 0; width:auto; height:2px; }
+  .dashboard-page #sidebarBadge { position:absolute; top:1px; left:calc(50% + 4px); min-width:15px; height:15px; font-size:8px; }
+  .dashboard-page .dashboard-main { min-height:calc(100vh - 132px); }
+  .dashboard-page .tab-content { min-height:calc(100vh - 132px); padding:25px 16px 42px; }
+  .dashboard-page .dashboard-footer { padding-bottom:78px; }
+  .dashboard-page .inicio-lower { grid-template-columns:1fr; }
+  .dashboard-page .cuenta-wrapper { width:min(380px,100%); }
+}
+.dashboard-home-mark .brand-mark { width:31px; height:31px; }
+@media(max-width:640px) { .dashboard-page .dashboard-home-mark { display:inline-flex; } }
+.dashboard-page .page-heading { width:min(1100px,100%); margin:0 auto 28px; }
+.dashboard-page .page-heading .inicio-eyebrow { margin-bottom:8px; }
+.dashboard-page .page-heading .section-title { margin:0 0 7px!important; padding:0!important; border:0!important; font-size:clamp(32px,3.5vw,42px); }
+.dashboard-page .page-heading p { color:var(--muted); font-size:12px; line-height:1.6; }
+.dashboard-page .page-heading + .form-card { margin-top:0; }
+.dashboard-page .tarjeta-bancaria { transition:transform .25s ease,box-shadow .25s ease; }
+.dashboard-page .tarjeta-bancaria:hover { transform:translateY(-3px); box-shadow:0 22px 42px rgba(23,62,52,.24); }
+@media(max-width:640px) { .dashboard-page .page-heading .section-title { font-size:32px; } }
