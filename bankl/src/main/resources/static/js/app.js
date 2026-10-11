@@ -76,11 +76,13 @@ function registrar() {
     if (!cliente.usuarioIS || !usuarioValido.test(cliente.usuarioIS)) return mostrarMensaje("resultadoRegistro", "Usuario inválido (solo letras y números)", "error");
     if (!cliente.contrasena || !passFuerte.test(cliente.contrasena)) return mostrarMensaje("resultadoRegistro", "Contraseña débil (mín 8, 1 mayúscula, 1 número)", "error");
 
-    fetch("http://localhost:8080/clientes/registro", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(cliente)
-    })
+   
+fetch("https://bankl-3d8a.onrender.com/clientes/registro", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(cliente)
+})
+
     .then(res => { if (!res.ok) throw new Error("Error en registro"); return res.json(); })
     .then(data => { mostrarMensaje("resultadoRegistro", "Cuenta creada PIN: " + data.pinSeguridad, "ok"); })
     .catch(() => { mostrarMensaje("resultadoRegistro", "Error al registrar", "error"); });
