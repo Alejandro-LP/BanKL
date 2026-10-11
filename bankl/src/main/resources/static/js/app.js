@@ -17,39 +17,76 @@ function mostrarMensaje(id, msg, tipo) {
     }
 }
 
-function login() {
+
+async function login() {
     const usuario = document.getElementById("usuario").value.trim();
     const contrasena = document.getElementById("contrasena").value.trim();
     const pin = document.getElementById("pin").value.trim();
 
     if (!usuario || !contrasena || !pin) {
-        return mostrarMensaje("resultado", "Completa todos los campos", "error");
+        return mostrarMensaje(
+            "resultado",
+            "Completa todos los campos",
+            "error"
+        );
     }
 
-    fetch(`http://localhost:8080/clientes/login?usuario=${usuario}&contrasena=${contrasena}&pin=${pin}`, {
-        method: "POST"
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data !== null) {
-            localStorage.setItem("usuario", data.usuarioIS);
-            localStorage.setItem("tipo", data.tipo);
-            localStorage.setItem("idDB", data.idDB);
-            localStorage.setItem("nombre", data.nombres + " " + data.apellidos);
+    const url = new URL(
+        "https://bankl-3d8a.onrender.com/clientes/login"
+    );
 
-            if (data.tipo === "ClienteNatural") {
-                window.location.href = "/html/dashboard.html";
-            } else if (data.tipo === "ClienteAdmin") {
-                window.location.href = "/html/admin.html";
-            }
-        } else {
-            mostrarMensaje("resultado", "Credenciales incorrectas o PIN inválido", "error");
+    url.searchParams.set("usuario", usuario);
+    url.searchParams.set("contrasena", contrasena);
+    url.searchParams.set("pin", pin);
+
+    try {
+        const res = await fetch(url.toString(), {
+            method: "POST"
+        });
+
+        if (!res.ok) {
+            throw new Error("Error HTTP " + res.status);
         }
-    })
-    .catch(() => {
-        mostrarMensaje("resultado", "Error en el servidor", "error");
-    });
+
+        const data = await res.json();
+
+        if (!data || !data.usuarioIS) {
+            return mostrarMensaje(
+                "resultado",
+                "Credenciales incorrectas o PIN inválido",
+                "error"
+            );
+        }
+
+        localStorage.setItem("usuario", data.usuarioIS);
+        localStorage.setItem("tipo", data.tipo);
+        localStorage.setItem("idDB", data.idDB);
+        localStorage.setItem(
+            "nombre",
+            data.nombres + " " + data.apellidos
+        );
+
+        if (data.tipo === "ClienteNatural") {
+            window.location.href = "/html/dashboard.html";
+        } else if (data.tipo === "ClienteAdmin") {
+            window.location.href = "/html/admin.html";
+        } else {
+            mostrarMensaje(
+                "resultado",
+                "Tipo de usuario no reconocido",
+                "error"
+            );
+        }
+    } catch (error) {
+        console.error("Error en login:", error);
+        mostrarMensaje(
+            "resultado",
+            "No se pudo iniciar sesión. Revisa el servidor.",
+            "error"
+        );
+    }
 }
+
 
 function registrar() {
     const cliente = {
