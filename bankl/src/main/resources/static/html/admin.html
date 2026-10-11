@@ -9,7 +9,7 @@
 <body class="admin-page">
 <header class="site-header">
     <div>
-        <div class="logo"><span>Ban</span><span>KL</span></div>
+        <a class="brand" href="index.html" aria-label="BanKL, inicio"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 3 35 11.5v17L20 37 5 28.5v-17L20 3Z"/><path d="M14 27V13h4v5l5-5h5l-6 6 6 8h-5l-4-5-1 1v4h-4Z"/></svg></span><span class="brand-word">Ban<b>KL</b></span></a>
         <small>Panel Administrador</small>
     </div>
     <div class="buttons">
@@ -18,10 +18,8 @@
     </div>
 </header>
 
-<div class="admin-intro">
-    <h2>Clientes Naturales</h2>
-    <p>Gestiona la informacion de los clientes registrados</p>
-</div>
+<section class="admin-intro"><div><span class="inicio-eyebrow">BANCO · ADMINISTRACIÓN</span><h1>Clientes</h1><p>Consulta y actualiza la información de tus clientes.</p></div><div class="admin-total"><strong id="totalClientes">—</strong><span>clientes registrados</span></div></section>
+<div class="admin-tools"><label class="admin-search"><span>⌕</span><input id="buscarCliente" type="search" placeholder="Buscar por nombre, usuario o correo" autocomplete="off"></label><span class="admin-search-hint">Información de clientes naturales</span></div>
 
 <main class="admin-grid" id="listaClientes">
     <p class="empty">Cargando clientes...</p>

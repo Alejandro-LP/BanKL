@@ -109,6 +109,8 @@ public abstract class Cliente {
         }
     }
 
+    public void setPinSeguridad(int pinSeguridad) { this.pinSeguridad = pinSeguridad; }
+
     public void generarPinSeguridad() {
         this.pinSeguridad = new SecureRandom().nextInt(9000) + 1000;
     }

@@ -1082,3 +1082,49 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible { 
 .dashboard-page .tarjeta-bancaria { transition:transform .25s ease,box-shadow .25s ease; }
 .dashboard-page .tarjeta-bancaria:hover { transform:translateY(-3px); box-shadow:0 22px 42px rgba(23,62,52,.24); }
 @media(max-width:640px) { .dashboard-page .page-heading .section-title { font-size:32px; } }
+/* BanKL admin area */
+.admin-page { background:var(--bg); }
+.admin-page .site-header { min-height:78px; padding:12px clamp(20px,6vw,86px); background:var(--bg); box-shadow:none; }
+.admin-page .site-header > div:first-child { display:flex; align-items:center; gap:16px; }
+.admin-page .site-header > div:first-child small { padding-left:15px; border-left:1px solid var(--line); color:var(--muted); font-size:10px; }
+.admin-page .buttons button { min-height:39px; padding:8px 14px; border:1px solid var(--line); border-radius:6px; color:var(--text); background:transparent; font-size:10px; }
+.admin-page .buttons button:hover { border-color:#afc299; background:var(--card); }
+.admin-intro { display:flex; align-items:flex-end; justify-content:space-between; gap:25px; width:min(1120px,100%); margin:52px auto 0; padding:0 22px; }
+.admin-intro h1 { color:var(--text); font-family:Georgia,serif; font-size:clamp(36px,4vw,48px); font-weight:400; letter-spacing:-.04em; }
+.admin-intro p { margin:8px 0 0; color:var(--muted); font-size:12px; }
+.admin-total { display:grid; gap:4px; padding:12px 16px; border:1px solid var(--line); border-radius:8px; background:var(--card); }
+.admin-total strong { color:var(--text); font-family:Georgia,serif; font-size:24px; font-weight:400; }
+.admin-total span { color:var(--muted); font-size:9px; }
+.admin-tools { display:flex; width:min(1120px,100%); align-items:center; justify-content:space-between; gap:15px; margin:22px auto 0; padding:0 22px; }
+.admin-search { display:flex; width:min(430px,100%); min-height:43px; align-items:center; gap:9px; padding:0 12px; border:1px solid var(--line); border-radius:7px; background:var(--card); }
+.admin-search > span { color:#789064; font-size:20px; }
+.admin-search input { width:100%; border:0; outline:0; color:var(--text); background:transparent; font-size:11px; }
+.admin-search input:focus { box-shadow:none; }
+.admin-search-hint { color:#929b8e; font-size:9px; }
+.admin-grid { width:min(1120px,100%); gap:10px; padding:16px 22px 60px; }
+.cliente-card { padding:18px 20px; border:1px solid var(--line); border-left:3px solid #a6ce4c; border-radius:8px; background:var(--card); box-shadow:0 5px 18px rgba(28,47,32,.035); }
+.cliente-header { align-items:center; margin-bottom:15px; }
+.cliente-identity { display:flex; align-items:center; gap:11px; }
+.cliente-avatar { display:grid; width:35px; height:35px; flex:0 0 35px; place-items:center; border-radius:50%; color:#46643a; background:#edf2e4; font-family:Georgia,serif; font-size:15px; }
+.cliente-nombre { color:var(--text); font-family:Georgia,serif; font-size:20px; }
+.cliente-info { grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); gap:12px 18px; }
+.info-item { color:#8a9587; font-size:9px; }
+.info-item strong { margin-bottom:3px; font-size:11px; font-weight:600; }
+.btn-editar { border-radius:5px; }
+.admin-empty { grid-column:1/-1; padding:32px 0; }
+.dark .admin-page .cliente-avatar { color:#d8ebb4; background:#29382a; }
+.dark .admin-page .admin-total,.dark .admin-page .admin-search { background:var(--card); }
+@media(max-width:640px) {
+ .admin-page .site-header { padding:10px 14px; }
+ .admin-page .site-header > div:first-child small { display:none; }
+ .admin-page .buttons button { min-height:35px; padding:7px 9px; font-size:9px; }
+ .admin-intro { align-items:flex-start; margin-top:31px; padding:0 17px; }
+ .admin-total { padding:9px 10px; }
+ .admin-total strong { font-size:20px; }
+ .admin-tools { align-items:flex-start; flex-direction:column; padding:0 17px; }
+ .admin-search-hint { display:none; }
+ .admin-grid { padding:14px 17px 42px; }
+ .cliente-card { padding:15px; }
+ .cliente-header { align-items:flex-start; }
+ .cliente-header .btn-editar { flex:0 0 auto; }
+}

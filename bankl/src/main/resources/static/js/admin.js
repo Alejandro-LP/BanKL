@@ -1,9 +1,13 @@
+let clientesAdmin = [];
 document.addEventListener("DOMContentLoaded", () => {
     const tipo = localStorage.getItem("tipo");
+    if (localStorage.getItem("bankl-theme") === "dark") document.body.classList.add("dark");
     if (tipo !== "ClienteAdmin") {
         window.location.href = "/html/Login.html";
         return;
     }
+    const busqueda = document.getElementById("buscarCliente");
+    if (busqueda) busqueda.addEventListener("input", renderizarClientes);
     cargarClientesNaturales();
 });
 
@@ -13,45 +17,53 @@ function escapeHtml(value) {
 
 function cargarClientesNaturales() {
     fetch("/api/admin/clientes")
-        .then(res => res.json())
+        .then(res => { if (!res.ok) throw new Error("No se pudieron cargar los clientes"); return res.json(); })
         .then(data => {
-            const clientes = Array.isArray(data) ? data : [];
-            const contenedor = document.getElementById("listaClientes");
-            contenedor.innerHTML = "";
-
-            if (clientes.length === 0) {
-                contenedor.innerHTML = "<p class='empty'>No hay clientes naturales registrados.</p>";
-                return;
-            }
-
-            clientes.forEach(c => {
-                const div = document.createElement("div");
-                div.classList.add("cliente-card");
-                div.innerHTML = `
-                    <div class="cliente-header">
-                        <div class="cliente-nombre">${escapeHtml(c.nombres)} ${escapeHtml(c.apellidos)}</div>
-                        <button class="btn-editar" data-id="${Number(c.idDB)}">
-                            Editar
-                        </button>
-                    </div>
-                    <div class="cliente-info">
-                        <div class="info-item"><strong>${escapeHtml(c.id)}</strong>Documento</div>
-                        <div class="info-item"><strong>${escapeHtml(c.usuarioIS)}</strong>Usuario</div>
-                        <div class="info-item"><strong>${escapeHtml(c.email)}</strong>Email</div>
-                        <div class="info-item"><strong>${escapeHtml(c.telefono)}</strong>Telefono</div>
-                        <div class="info-item"><strong>${escapeHtml(c.direccion || '-')}</strong>Direccion</div>
-                    </div>
-                `;
-                div.querySelector(".btn-editar").addEventListener("click", () => abrirModal(c.idDB, c.nombres, c.apellidos, c.email, c.telefono, c.direccion));
-                contenedor.appendChild(div);
-            });
+            clientesAdmin = Array.isArray(data) ? data : [];
+            const total = document.getElementById("totalClientes");
+            if (total) total.textContent = clientesAdmin.length.toLocaleString("es-CO");
+            renderizarClientes();
         })
         .catch(() => {
             document.getElementById("listaClientes").innerHTML =
-                "<p style='color:red;padding:20px'>Error al cargar clientes.</p>";
+                "<p class='empty'>No se pudieron cargar los clientes. Comprueba tu conexión e inténtalo de nuevo.</p>";
         });
 }
 
+function renderizarClientes() {
+    const contenedor = document.getElementById("listaClientes");
+    if (!contenedor) return;
+    const consulta = (document.getElementById("buscarCliente")?.value || "").trim().toLocaleLowerCase("es");
+    const filtrados = clientesAdmin.filter(cliente =>
+        [cliente.nombres, cliente.apellidos, cliente.usuarioIS, cliente.email, cliente.telefono]
+            .some(valor => String(valor || "").toLocaleLowerCase("es").includes(consulta))
+    );
+    contenedor.innerHTML = "";
+    if (filtrados.length === 0) {
+        contenedor.innerHTML = clientesAdmin.length
+            ? "<p class='empty admin-empty'>No encontramos clientes con esa búsqueda.</p>"
+            : "<p class='empty admin-empty'>Aún no hay clientes naturales registrados.</p>";
+        return;
+    }
+    filtrados.forEach(c => {
+        const div = document.createElement("article");
+        div.classList.add("cliente-card");
+        div.innerHTML = `
+            <div class="cliente-header">
+                <div class="cliente-identity"><span class="cliente-avatar">${escapeHtml((c.nombres || "C").trim().charAt(0).toUpperCase())}</span><div class="cliente-nombre">${escapeHtml(c.nombres)} ${escapeHtml(c.apellidos)}</div></div>
+                <button class="btn-editar" data-id="${Number(c.idDB)}">Editar datos <span>↗</span></button>
+            </div>
+            <div class="cliente-info">
+                <div class="info-item"><strong>${escapeHtml(c.id)}</strong>Documento</div>
+                <div class="info-item"><strong>${escapeHtml(c.usuarioIS)}</strong>Usuario</div>
+                <div class="info-item"><strong>${escapeHtml(c.email)}</strong>Correo</div>
+                <div class="info-item"><strong>${escapeHtml(c.telefono)}</strong>Teléfono</div>
+                <div class="info-item"><strong>${escapeHtml(c.direccion || "—")}</strong>Dirección</div>
+            </div>`;
+        div.querySelector(".btn-editar").addEventListener("click", () => abrirModal(c.idDB, c.nombres, c.apellidos, c.email, c.telefono, c.direccion));
+        contenedor.appendChild(div);
+    });
+}
 function abrirModal(idDB, nombres, apellidos, email, telefono, direccion) {
     document.getElementById("editIdDB").value = idDB;
     document.getElementById("editNombres").value = nombres;
@@ -101,4 +113,7 @@ function cerrarSesion() {
     window.location.href = "/html/Login.html";
 }
 
-function toggleDark() { document.body.classList.toggle("dark"); }
+function toggleDark() {
+    document.body.classList.toggle("dark");
+    localStorage.setItem("bankl-theme", document.body.classList.contains("dark") ? "dark" : "light");
+}

@@ -117,14 +117,24 @@ CREATE DATABASE bankl;
 USE bankl;
 ```
 
-### Crear el administrador
-```sql
-INSERT INTO cliente (nombres, apellidos, id, direccion, telefono, email, usuariois, contrasena, pin_seguridad)
-VALUES ('Admin', 'BanKL', '00000000', 'Sede principal', '0000000000', 'admin@bankl.com', 'admin', 'Admin123', 1234);
+### Crear la cuenta de administrador de prueba
 
-INSERT INTO cliente_admin (iddb) VALUES (LAST_INSERT_ID());
+Con la base de datos `bankl` y las tablas de la aplicación ya creadas, ejecuta desde la raíz del repositorio:
+
+```bash
+mysql -u root -p bankl < bankl/database/seed_admin.sql
 ```
 
+La cuenta de demostración queda con estos datos:
+
+| Usuario | Contraseña | PIN | Rol |
+|---|---|---:|---|
+| `admin` | `Admin123` | `1234` | Administrador |
+
+Si despliegas en Render, el proyecto también incluye un inicializador controlado por `ADMIN_SEED_ENABLED`. Después de desplegar estos cambios, agrega `ADMIN_SEED_ENABLED=true` en **Render → servicio BanKL → Environment** y espera a que la aplicación arranque conectada a Aiven. El inicializador crea la cuenta únicamente si `admin` no existe; no cambia una cuenta ya creada. Cuando aparezca en los logs `README demo administrator account created`, elimina la variable o configúrala como `false` y vuelve a desplegar.
+El script es idempotente para poder volver a ejecutarlo sin duplicar la cuenta. La contraseña de demostración se guarda inicialmente como texto y el sistema la transforma a PBKDF2 cuando se inicia sesión por primera vez. Usa estas credenciales solo para desarrollo local y cámbialas antes de cualquier uso real.
+
+El panel está disponible en `/html/admin.html`. Permite buscar clientes por nombre, usuario, correo o teléfono y editar sus datos. Tanto la página como `/api/admin/**` requieren una sesión con rol `ClienteAdmin`.
 ---
 
 ## Como correr el proyecto
