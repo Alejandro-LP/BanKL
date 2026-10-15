@@ -2,17 +2,24 @@ package co.edu.konradlorenz.service;
 
 import co.edu.konradlorenz.model.*;
 import co.edu.konradlorenz.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TransferenciaService {
-    @Autowired private TransferenciaRepository transferenciaRepository;
-    @Autowired private ClienteRepository clienteRepository;
-    @Autowired private CuentaRepository cuentaRepository;
-    @Autowired private NotificacionRepository notificacionRepository;
+    private final TransferenciaRepository transferenciaRepository;
+    private final CuentaRepository cuentaRepository;
+    private final NotificacionRepository notificacionRepository;
+    private final OwnershipGuard ownershipGuard;
+
+    public TransferenciaService(TransferenciaRepository transferenciaRepository, CuentaRepository cuentaRepository,
+            NotificacionRepository notificacionRepository, OwnershipGuard ownershipGuard) {
+        this.transferenciaRepository = transferenciaRepository;
+        this.cuentaRepository = cuentaRepository;
+        this.notificacionRepository = notificacionRepository;
+        this.ownershipGuard = ownershipGuard;
+    }
 
     @Transactional
     public Transferencia realizar(String usuarioIS, Integer cuentaOrigenId,
@@ -23,8 +30,7 @@ public class TransferenciaService {
                 (descripcion != null && descripcion.length() > 250))
             throw new IllegalArgumentException("Datos de transferencia inválidos");
 
-        Cliente cliente = clienteRepository.findByUsuarioIS(usuarioIS);
-        if (cliente == null) throw new RuntimeException("Cliente no encontrado");
+        Cliente cliente = ownershipGuard.requireCustomer(usuarioIS);
 
         // Buscar cuenta origen por ID
         Cuenta origen = cuentaRepository.findByIdForUpdate(cuentaOrigenId).orElse(null);
@@ -37,10 +43,16 @@ public class TransferenciaService {
         try { numeroDestino=Integer.parseInt(cuentaDestinoNum.trim()); }
         catch (NumberFormatException ex) { throw new IllegalArgumentException("Cuenta destino inválida"); }
         Cuenta destino = cuentaRepository.findByNumeroCuentaForUpdate(numeroDestino);
+        if (!"DEBITO".equals(origen.getTipo()) || !origen.saldoDebitoRespaldado())
+            throw new IllegalArgumentException("La cuenta origen no tiene saldo débito respaldado por el libro de movimientos");
+        if (destino != null && "DEBITO".equals(destino.getTipo()) && !destino.saldoDebitoRespaldado())
+            throw new IllegalArgumentException("La cuenta destino tiene saldo sin respaldo en el libro de movimientos");
         if (destino == null || destino.getId().equals(origen.getId()))
             throw new IllegalArgumentException("Cuenta destino inválida");
         if (!origen.retirar(monto)) throw new IllegalArgumentException("Fondos insuficientes");
         if (!destino.consignar(monto)) throw new IllegalArgumentException("No se pudo acreditar la cuenta destino");
+        origen.registrarMovimiento("SALIDA:TRANSFERENCIA_ENVIADA", monto);
+        destino.registrarMovimiento("ENTRADA:TRANSFERENCIA_RECIBIDA", monto);
         cuentaRepository.save(destino);
 
             // Notificar al destinatario
@@ -66,8 +78,7 @@ public class TransferenciaService {
     }
 
     public List<Transferencia> listar(String usuarioIS) {
-        Cliente cliente = clienteRepository.findByUsuarioIS(usuarioIS);
-        if (cliente == null) return List.of();
+        Cliente cliente = ownershipGuard.requireCustomer(usuarioIS);
         return transferenciaRepository.findByClienteIdDB(cliente.getIdDB());
     }
 }

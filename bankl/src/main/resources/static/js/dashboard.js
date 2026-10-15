@@ -30,7 +30,7 @@ function irTab(tab, updateHistory = true) {
 
     if (tab === "tarjetas") cargarCuentasDash();
     if (tab === "prestamos") cargarPrestamos();
-    if (tab === "inversiones") cargarInversiones();
+    if (tab === "inversiones") { cargarInversiones(); cargarCuentasOrigenInversion(); }
     if (tab === "beneficiarios") cargarBeneficiarios();
     if (tab === "transferencias") { cargarTransferencias(); cargarCuentasParaTransferencia(); }
     if (tab === "notificaciones") cargarNotificaciones();
@@ -47,7 +47,7 @@ function cargarSeccionDesdeUrl() {
 window.addEventListener("popstate", cargarSeccionDesdeUrl);
 // ===== RESUMEN INICIO =====
 function cargarResumen() {
-    fetch(`/clientes/cuentas?usuario=${usuario}`)
+    fetch("/clientes/cuentas")
         .then(r => r.json())
         .then(cuentas => {
             const debito  = cuentas.find(c => c.tipo === "DEBITO");
@@ -58,7 +58,7 @@ function cargarResumen() {
                 "$" + (credito ? credito.disponible.toLocaleString("en-US",{minimumFractionDigits:2}) : "0.00");
         }).catch(()=>{});
 
-    fetch(`/inversiones?usuario=${usuario}`)
+    fetch("/inversiones")
         .then(r => r.json())
         .then(data => {
             const total = data.filter(i=>i.estado==="ACTIVA").reduce((s,i)=>s+i.monto,0);
@@ -66,7 +66,7 @@ function cargarResumen() {
                 "$" + total.toLocaleString("en-US",{minimumFractionDigits:2});
         }).catch(()=>{});
 
-    fetch(`/prestamos?usuario=${usuario}`)
+    fetch("/prestamos")
         .then(r => r.json())
         .then(data => {
             const activos = data.filter(p=>p.estado==="ACTIVO").length;
@@ -76,7 +76,7 @@ function cargarResumen() {
 
 // ===== TARJETAS =====
 function cargarCuentasDash() {
-    fetch(`/clientes/cuentas?usuario=${usuario}`)
+    fetch("/clientes/cuentas")
         .then(r => { if(!r.ok) throw new Error(r.status); return r.json(); })
         .then(cuentas => {
             const contenedor = document.getElementById("contenedorCuentasDash");
@@ -115,9 +115,7 @@ function cargarCuentasDash() {
                         <div class="tarjeta-acciones">
                             ${esCredito ? `
                                 <button class="btn-accion btn-pagar"  onclick="pagarCuenta(${cuenta.id})"> Pagar</button>
-                                <button class="btn-accion btn-avance" onclick="avanceCuenta(${cuenta.id})"> Avance</button>
                             ` : `
-                                <button class="btn-accion btn-ingresar" onclick="ingresarCuenta(${cuenta.id})"> Ingresar</button>
                                 <button class="btn-accion btn-retirar" onclick="retirarCuenta(${cuenta.id})"> Retirar</button>
                             `}
                             <button class="btn-accion btn-cambiar" onclick="cambiarTarjetaDash(${cuenta.id})"> Cambiar</button>
@@ -131,21 +129,44 @@ function cargarCuentasDash() {
         });
 }
 
-function ingresarCuenta(id) {
-    const v = prompt("Valor a ingresar ($):"); if (!v||isNaN(v)||v<=0) return;
-    fetch(`/cuentas/consignar?idCuenta=${id}&valor=${v}`,{method:"POST"}).then(()=>cargarCuentasDash());
-}
 function retirarCuenta(id) {
     const v = prompt("Valor a retirar ($):"); if (!v||isNaN(v)||v<=0) return;
-    fetch(`/cuentas/retirar?idCuenta=${id}&valor=${v}`,{method:"POST"}).then(()=>cargarCuentasDash());
+    fetch(`/cuentas/retirar?idCuenta=${encodeURIComponent(id)}&valor=${encodeURIComponent(v)}`,{method:"POST"})
+        .then(r=>{if(!r.ok)throw new Error("No fue posible retirar fondos"); cargarCuentasDash();})
+        .catch(e=>alert(e.message));
 }
-function pagarCuenta(id) {
+async function pagarCuenta(id) {
     const v = prompt("Valor a pagar ($):"); if (!v||isNaN(v)||v<=0) return;
-    fetch(`/cuentas/consignar?idCuenta=${id}&valor=${v}`,{method:"POST"}).then(()=>cargarCuentasDash());
+    const idCuentaOrigen = await elegirCuentaDebito("Selecciona el número de la cuenta débito de origen");
+    if (!idCuentaOrigen) return;
+    const params = new URLSearchParams({idCuentaCredito: String(id), idCuentaOrigen, valor: v});
+    fetch(`/cuentas/pagar-tarjeta?${params}`,{method:"POST"})
+        .then(r=>{if(!r.ok)throw new Error("No fue posible pagar la tarjeta"); cargarCuentasDash();})
+        .catch(e=>alert(e.message));
 }
-function avanceCuenta(id) {
-    const v = prompt("Valor del avance ($):"); if (!v||isNaN(v)||v<=0) return;
-    fetch(`/cuentas/retirar?idCuenta=${id}&valor=${v}`,{method:"POST"}).then(()=>cargarCuentasDash());
+async function elegirCuentaDebito(mensaje) {
+    const response = await fetch("/clientes/cuentas");
+    if (!response.ok) throw new Error("No se pudieron cargar tus cuentas");
+    const cuentas = (await response.json()).filter(c => c.tipo === "DEBITO");
+    if (!cuentas.length) { alert("No tienes cuentas débito disponibles"); return null; }
+    const opciones = cuentas.map(c => String(c.numeroCuenta)).join(", ");
+    const numero = prompt(`${mensaje}: ${opciones}`);
+    const cuenta = cuentas.find(c => String(c.numeroCuenta) === String(numero || "").trim());
+    if (!cuenta) { alert("Selecciona un número de cuenta válido"); return null; }
+    return String(cuenta.id);
+}
+function cargarCuentasOrigenInversion() {
+    fetch("/clientes/cuentas")
+        .then(r=>{if(!r.ok)throw new Error("Error cargando cuentas");return r.json();})
+        .then(cuentas=>{
+            const select=document.getElementById("cuentaOrigenInversion");
+            if(!select)return;
+            select.replaceChildren(new Option("Cuenta débito para financiar", ""));
+            cuentas.filter(c=>c.tipo==="DEBITO").forEach(c=>{
+                select.add(new Option(`Cuenta terminada en ${String(c.numeroCuenta).slice(-4)} · Saldo $${Number(c.saldo).toFixed(2)}`, String(c.id)));
+            });
+        })
+        .catch(()=>{});
 }
 function cambiarTarjetaDash(id) {
     if (!confirm("¿Regenerar datos de esta tarjeta?")) return;
@@ -157,7 +178,7 @@ function cambiarTarjetaDash(id) {
 
 // ===== NOTIFICACIONES =====
 function cargarNotificaciones() {
-    fetch(`/notificaciones?usuario=${usuario}`)
+    fetch("/notificaciones")
         .then(r=>r.json())
         .then(data=>{
             const badge = document.getElementById("badgeNoti");
@@ -197,7 +218,7 @@ function leerNoti(id,el) {
 
 // ===== PRÉSTAMOS =====
 function cargarPrestamos() {
-    fetch(`/prestamos?usuario=${usuario}`)
+    fetch("/prestamos")
         .then(r=>r.json())
         .then(data=>{
             document.getElementById("listaPrestamos").innerHTML = data.length===0
@@ -221,17 +242,23 @@ function solicitarPrestamo() {
     const tasa=document.getElementById("tasaP").value;
     const cuotas=document.getElementById("cuotasP").value;
     if(!monto||!tasa||!cuotas){alert("Completa todos los campos");return;}
-    fetch(`/prestamos/solicitar?usuario=${usuario}&monto=${monto}&tasa=${tasa}&cuotas=${cuotas}`,{method:"POST"})
-        .then(r=>r.json()).then(()=>{cargarPrestamos();cargarNotificaciones();alert("¡Préstamo aprobado!");});
+    fetch(`/prestamos/solicitar?monto=${encodeURIComponent(monto)}&tasa=${encodeURIComponent(tasa)}&cuotas=${encodeURIComponent(cuotas)}`,{method:"POST"})
+        .then(r=>{if(!r.ok)throw new Error("No se pudo registrar la solicitud");return r.json();})
+        .then(()=>{cargarPrestamos();cargarNotificaciones();alert("Solicitud recibida; queda pendiente de aprobación y desembolso.");})
+        .catch(e=>alert(e.message));
 }
-function pagarCuotaPrestamo(id) {
-    fetch(`/prestamos/pagar/${id}`,{method:"POST"})
-        .then(()=>{cargarPrestamos();cargarNotificaciones();});
+async function pagarCuotaPrestamo(id) {
+    const idCuenta=await elegirCuentaDebito("Selecciona el número de la cuenta para pagar la cuota");
+    if(!idCuenta)return;
+    fetch(`/prestamos/pagar/${id}?idCuenta=${encodeURIComponent(idCuenta)}`,{method:"POST"})
+        .then(r=>{if(!r.ok)throw new Error("No se pudo pagar la cuota");return r.json();})
+        .then(()=>{cargarPrestamos();cargarNotificaciones();})
+        .catch(e=>alert(e.message));
 }
 
 // ===== INVERSIONES =====
 function cargarInversiones() {
-    fetch(`/inversiones?usuario=${usuario}`)
+    fetch("/inversiones")
         .then(r=>r.json())
         .then(data=>{
             document.getElementById("listaInversiones").innerHTML = data.length===0
@@ -243,8 +270,8 @@ function cargarInversiones() {
                             <div class="info-row"><span>Monto</span><strong>$${i.monto.toLocaleString("en-US",{minimumFractionDigits:2})}</strong></div>
                             <div class="info-row"><span>Tasa</span><strong>${i.tasaInteres}% anual</strong></div>
                             <div class="info-row"><span>Plazo</span><strong>${i.plazoMeses} meses</strong></div>
-                            <div class="info-row"><span>Rendimiento</span><strong class="verde">+$${i.rendimientoTotal.toLocaleString("en-US",{minimumFractionDigits:2})}</strong></div>
-                            <div class="info-row"><span>Al vencer</span><strong>$${i.montoFinal.toLocaleString("en-US",{minimumFractionDigits:2})}</strong></div>
+                            <div class="info-row"><span>Rendimiento proyectado</span><strong class="verde">+$${i.rendimientoTotal.toLocaleString("en-US",{minimumFractionDigits:2})}</strong></div>
+                            <div class="info-row"><span>Capital a devolver</span><strong>$${i.monto.toLocaleString("en-US",{minimumFractionDigits:2})}</strong></div>
                             <div class="info-row"><span>Vence</span><strong>${i.fechaVencimiento}</strong></div>
                         </div>
                         ${i.estado==="ACTIVA"?`<button class="btn-accion btn-retirar" onclick="retirarInversion(${i.id})"> Retirar</button>`:""}
@@ -256,18 +283,26 @@ function crearInversion() {
     const tasa=document.getElementById("tasaI").value;
     const plazo=document.getElementById("plazoI").value;
     const tipo=document.getElementById("tipoI").value;
-    if(!monto||!tasa||!plazo){alert("Completa todos los campos");return;}
-    fetch(`/inversiones?usuario=${usuario}&monto=${monto}&tasa=${tasa}&plazo=${plazo}&tipo=${tipo}`,{method:"POST"})
-        .then(r=>r.json()).then(()=>{cargarInversiones();cargarNotificaciones();alert("¡Inversión creada!");});
+    const idCuenta=document.getElementById("cuentaOrigenInversion").value;
+    if(!monto||!tasa||!plazo||!idCuenta){alert("Completa los campos y elige una cuenta débito");return;}
+    const params=new URLSearchParams({idCuenta,monto,tasa,plazo,tipo});
+    fetch(`/inversiones?${params}`,{method:"POST"})
+        .then(r=>{if(!r.ok)throw new Error("Saldo insuficiente o datos inválidos");return r.json();})
+        .then(()=>{cargarInversiones();cargarNotificaciones();alert("Inversión creada con fondos de tu cuenta débito.");})
+        .catch(e=>alert(e.message));
 }
-function retirarInversion(id) {
+async function retirarInversion(id) {
     if(!confirm("¿Retirar esta inversión?"))return;
-    fetch(`/inversiones/retirar/${id}`,{method:"POST"}).then(()=>cargarInversiones());
+    const idCuenta=await elegirCuentaDebito("Selecciona la cuenta que recibirá el capital al vencimiento");
+    if(!idCuenta)return;
+    fetch(`/inversiones/retirar/${id}?idCuenta=${encodeURIComponent(idCuenta)}`,{method:"POST"})
+        .then(r=>{if(!r.ok)throw new Error("Solo se devuelve el capital al vencimiento");return r.json();})
+        .then(()=>cargarInversiones()).catch(e=>alert(e.message));
 }
 
 // ===== BENEFICIARIOS =====
 function cargarBeneficiarios() {
-    fetch(`/beneficiarios?usuario=${usuario}`)
+    fetch("/beneficiarios")
         .then(r=>r.json())
         .then(data=>{
             document.getElementById("listaBeneficiarios").innerHTML = data.length===0
@@ -292,7 +327,8 @@ function agregarBeneficiario() {
     const banco=document.getElementById("bancoB").value;
     const alias=document.getElementById("aliasB").value;
     if(!nombre||!cuenta||!banco){alert("Completa los campos obligatorios");return;}
-    fetch(`/beneficiarios?usuario=${usuario}&nombre=${encodeURIComponent(nombre)}&numeroCuenta=${cuenta}&banco=${encodeURIComponent(banco)}&alias=${encodeURIComponent(alias)}`,{method:"POST"})
+    const params = new URLSearchParams({nombre, numeroCuenta: cuenta, banco, alias});
+    fetch(`/beneficiarios?${params}`,{method:"POST"})
         .then(()=>{
             cargarBeneficiarios();
             ["nombreB","cuentaB","bancoB","aliasB"].forEach(id=>document.getElementById(id).value="");
@@ -305,7 +341,7 @@ function eliminarBeneficiario(id) {
 
 // ===== TRANSFERENCIAS =====
 function cargarTransferencias() {
-    fetch(`/transferencias?usuario=${usuario}`)
+    fetch("/transferencias")
         .then(r=>r.json())
         .then(data=>{
             document.getElementById("listaTransferencias").innerHTML = data.length===0
@@ -323,7 +359,7 @@ function cargarTransferencias() {
         });
 }
 function cargarCuentasParaTransferencia() {
-    fetch(`/clientes/cuentas?usuario=${usuario}`)
+    fetch("/clientes/cuentas")
         .then(r => r.json())
         .then(cuentas => {
             const sel = document.getElementById("cuentaOrigenSelect");
@@ -343,7 +379,8 @@ function realizarTransferencia() {
     const monto=document.getElementById("montoT").value;
     const desc=document.getElementById("descripcionT").value||"Transferencia";
     if(!origenId||!destino||!dest||!monto){alert("Completa todos los campos");return;}
-    fetch(`/transferencias?usuario=${usuario}&cuentaOrigenId=${origenId}&cuentaDestino=${destino}&destinatario=${encodeURIComponent(dest)}&monto=${monto}&descripcion=${encodeURIComponent(desc)}`,{method:"POST"})
+    const params = new URLSearchParams({cuentaOrigenId: origenId, cuentaDestino: destino, destinatario: dest, monto, descripcion: desc});
+    fetch(`/transferencias?${params}`,{method:"POST"})
         .then(r=>r.json())
         .then(t=>{
             cargarTransferencias();cargarNotificaciones();

@@ -5,6 +5,7 @@ import co.edu.konradlorenz.service.TransferenciaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/transferencias")
@@ -14,17 +15,18 @@ public class TransferenciaController {
     private TransferenciaService transferenciaService;
 
     @PostMapping
-    public Transferencia realizar(@RequestParam String usuario,
-                                  @RequestParam Integer cuentaOrigenId,
+    public Transferencia realizar(@RequestParam Integer cuentaOrigenId,
                                   @RequestParam String cuentaDestino,
                                   @RequestParam String destinatario,
                                   @RequestParam double monto,
-                                  @RequestParam String descripcion) {
-        return transferenciaService.realizar(usuario, cuentaOrigenId, cuentaDestino, destinatario, monto, descripcion);
+                                  @RequestParam String descripcion, HttpSession session) {
+        return transferenciaService.realizar(usuario(session), cuentaOrigenId, cuentaDestino, destinatario, monto, descripcion);
     }
 
     @GetMapping
-    public List<Transferencia> listar(@RequestParam String usuario) {
-        return transferenciaService.listar(usuario);
+    public List<Transferencia> listar(HttpSession session) {
+        return transferenciaService.listar(usuario(session));
     }
+
+    private String usuario(HttpSession session) { return (String) session.getAttribute("usuario"); }
 }

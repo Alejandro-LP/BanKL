@@ -2,18 +2,23 @@ package co.edu.konradlorenz.service;
 
 import co.edu.konradlorenz.model.*;
 import co.edu.konradlorenz.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
 public class BeneficiarioService {
-    @Autowired private BeneficiarioRepository beneficiarioRepository;
-    @Autowired private ClienteRepository clienteRepository;
+    private final BeneficiarioRepository beneficiarioRepository;
+    private final OwnershipGuard ownershipGuard;
+
+    public BeneficiarioService(BeneficiarioRepository beneficiarioRepository, OwnershipGuard ownershipGuard) {
+        this.beneficiarioRepository = beneficiarioRepository;
+        this.ownershipGuard = ownershipGuard;
+    }
 
     public Beneficiario agregar(String usuarioIS, String nombre, String numeroCuenta, String banco, String alias) {
-        Cliente cliente = clienteRepository.findByUsuarioIS(usuarioIS);
-        if (cliente == null) throw new RuntimeException("Cliente no encontrado");
+        Cliente cliente = ownershipGuard.requireCustomer(usuarioIS);
         Beneficiario b = new Beneficiario();
         b.setNombre(nombre);
         b.setNumeroCuenta(numeroCuenta);
@@ -24,10 +29,15 @@ public class BeneficiarioService {
     }
 
     public List<Beneficiario> listar(String usuarioIS) {
-        Cliente cliente = clienteRepository.findByUsuarioIS(usuarioIS);
-        if (cliente == null) return List.of();
+        Cliente cliente = ownershipGuard.requireCustomer(usuarioIS);
         return beneficiarioRepository.findByClienteIdDB(cliente.getIdDB());
     }
 
-    public void eliminar(Integer id) { beneficiarioRepository.deleteById(id); }
+    public void eliminar(String usuarioIS, Integer id) {
+        Cliente cliente = ownershipGuard.requireCustomer(usuarioIS);
+        Beneficiario beneficiario = beneficiarioRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Beneficiario no encontrado"));
+        ownershipGuard.requireOwner(cliente, beneficiario.getCliente());
+        beneficiarioRepository.delete(beneficiario);
+    }
 }

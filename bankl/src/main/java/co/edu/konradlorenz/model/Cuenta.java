@@ -88,6 +88,24 @@ public class Cuenta {
     public void setCliente(Cliente cliente) { this.cliente = cliente; }
     public void setBloqueada(boolean bloqueada) { this.bloqueada = bloqueada; }
 
+    public void registrarMovimiento(String tipo, double valor) {
+        Transaccion transaccion = new Transaccion(tipo, valor);
+        transaccion.setCuenta(this);
+        historial.add(transaccion);
+    }
+
+    /** Debit balances are spendable only when they reconcile with server-created ledger entries. */
+    public boolean saldoDebitoRespaldado() {
+        if (!"DEBITO".equals(tipo)) return true;
+        double saldoLibro = 0;
+        for (Transaccion movimiento : historial) {
+            if (movimiento.getTipo().startsWith("ENTRADA:")) saldoLibro += movimiento.getValor();
+            else if (movimiento.getTipo().startsWith("SALIDA:")) saldoLibro -= movimiento.getValor();
+            else return false;
+        }
+        return Math.abs(saldo - saldoLibro) < 0.005;
+    }
+
     public boolean consignar(double valor) {
         if (bloqueada || valor <= 0) return false;
         if ("CREDITO".equals(tipo)) {

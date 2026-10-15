@@ -75,13 +75,13 @@
 </div>
 <!-- TARJETAS -->
 <div class="tab-content" id="tab-tarjetas" data-page="tarjetas">
-    <div class="page-heading"><span class="inicio-eyebrow">TUS PRODUCTOS</span><h1 class="section-title">Mis tarjetas</h1><p>Consulta tus tarjetas, saldos y acciones disponibles.</p></div>
+    <div class="page-heading"><span class="inicio-eyebrow">TUS PRODUCTOS</span><h1 class="section-title">Mis tarjetas</h1><p>Consulta tus tarjetas, saldos y acciones disponibles. Los retiros y transferencias requieren saldo conciliado con movimientos registrados.</p></div>
     <div id="contenedorCuentasDash"><p class="empty">Preparando tu espacio…</p></div>
 </div>
 
 <!-- PRÉSTAMOS -->
 <div class="tab-content" id="tab-prestamos" data-page="prestamos">
-    <div class="page-heading"><span class="inicio-eyebrow">FINANCIACIÓN</span><h1 class="section-title">Mis préstamos</h1><p>Administra tus solicitudes y conoce el estado de tus cuotas.</p></div>
+    <div class="page-heading"><span class="inicio-eyebrow">FINANCIACIÓN</span><h1 class="section-title">Mis préstamos</h1><p>Las solicitudes quedan pendientes: este sistema no desembolsa préstamos hasta integrar una fuente de fondos verificable.</p></div>
     <div class="form-card">
         <h3>Solicitar préstamo</h3>
         <div class="form-grid">
@@ -96,13 +96,14 @@
 
 <!-- INVERSIONES -->
 <div class="tab-content" id="tab-inversiones" data-page="inversiones">
-    <div class="page-heading"><span class="inicio-eyebrow">HAZ CRECER TU DINERO</span><h1 class="section-title">Mis inversiones</h1><p>Consulta tu capital activo o crea una nueva inversión.</p></div>
+    <div class="page-heading"><span class="inicio-eyebrow">HAZ CRECER TU DINERO</span><h1 class="section-title">Mis inversiones</h1><p>El capital se descuenta de una cuenta débito y se devuelve al vencimiento. El rendimiento es una proyección sin desembolso.</p></div>
     <div class="form-card">
         <h3>Nueva inversión</h3>
         <div class="form-grid">
             <input id="montoI" type="number" placeholder="Monto ($)" min="100">
             <input id="tasaI"  type="number" placeholder="Tasa anual (%)" value="8" step="0.1">
             <input id="plazoI" type="number" placeholder="Plazo (meses)" min="1" max="60">
+            <select id="cuentaOrigenInversion"><option value="">Cuenta débito para financiar</option></select>
             <select id="tipoI"><option value="CDT">CDT</option><option value="AHORRO_PROGRAMADO">Ahorro Programado</option></select>
         </div>
         <button class="btn-accion btn-ingresar" onclick="crearInversion()"> Crear</button>

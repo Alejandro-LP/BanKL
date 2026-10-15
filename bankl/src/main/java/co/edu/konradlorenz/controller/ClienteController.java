@@ -46,7 +46,7 @@ public class ClienteController {
 
     
     @GetMapping("/cuentas")
-    public List<Cuenta> obtenerCuentas(@RequestParam String usuario) {
-        return clienteService.obtenerCuentas(usuario);
+    public List<Cuenta> obtenerCuentas(HttpSession session) {
+        return clienteService.obtenerCuentas((String) session.getAttribute("usuario"));
     }
 }

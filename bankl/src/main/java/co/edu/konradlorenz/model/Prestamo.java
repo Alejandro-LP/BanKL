@@ -34,13 +34,15 @@ public class Prestamo {
         p.tasaInteres = tasaInteres;
         p.numeroCuotas = numeroCuotas;
         p.cuotasPagadas = 0;
-        p.estado = "ACTIVO";
+        // A request does not represent a disbursement; activation needs an explicit funded approval flow.
+        p.estado = "SOLICITADO";
         p.fechaInicio = LocalDate.now();
         p.fechaVencimiento = LocalDate.now().plusMonths(numeroCuotas);
         // Cuota mensual con interés compuesto
         double tasaMensual = tasaInteres / 100.0 / 12.0;
-        p.valorCuota = monto * (tasaMensual * Math.pow(1 + tasaMensual, numeroCuotas))
-                              / (Math.pow(1 + tasaMensual, numeroCuotas) - 1);
+        p.valorCuota = tasaMensual == 0 ? monto / numeroCuotas :
+            monto * (tasaMensual * Math.pow(1 + tasaMensual, numeroCuotas))
+                / (Math.pow(1 + tasaMensual, numeroCuotas) - 1);
         p.valorCuota = Math.round(p.valorCuota * 100.0) / 100.0;
         return p;
     }

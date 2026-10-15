@@ -17,9 +17,7 @@ function escapeHtml(value) { return String(value ?? "").replace(/[&<>"']/g, c =>
 });
 
 function cargarCuentas() {
-    const usuario = localStorage.getItem("usuario");
-
-    fetch(`/clientes/cuentas?usuario=${usuario}`)
+    fetch("/clientes/cuentas")
         .then(res => {
             if (!res.ok) throw new Error("Error " + res.status);
             return res.json();
@@ -72,9 +70,7 @@ function cargarCuentas() {
                         <div class="tarjeta-acciones">
                             ${esCredito ? `
                                 <button class="btn-accion btn-pagar" onclick="pagar(${cuenta.id})">Pagar</button>
-                                <button class="btn-accion btn-avance" onclick="avance(${cuenta.id})">Avance</button>
                             ` : `
-                                <button class="btn-accion btn-ingresar" onclick="ingresar(${cuenta.id})">Ingresar</button>
                                 <button class="btn-accion btn-retirar" onclick="retirar(${cuenta.id})">Retirar</button>
                             `}
                             <button class="btn-accion btn-cambiar" onclick="cambiarTarjeta(${cuenta.id})">Cambiar</button>
@@ -91,13 +87,6 @@ function cargarCuentas() {
         });
 }
 
-function ingresar(id) {
-    const valor = prompt("Valor a ingresar ($):");
-    if (!valor || isNaN(valor) || Number(valor) <= 0) return;
-    fetch(`/cuentas/consignar?idCuenta=${id}&valor=${valor}`, { method: "POST" })
-        .then(() => cargarCuentas());
-}
-
 function retirar(id) {
     const valor = prompt("Valor a retirar ($):");
     if (!valor || isNaN(valor) || Number(valor) <= 0) return;
@@ -105,18 +94,19 @@ function retirar(id) {
         .then(() => cargarCuentas());
 }
 
-function pagar(id) {
+async function pagar(id) {
     const valor = prompt("Valor a pagar ($):");
     if (!valor || isNaN(valor) || Number(valor) <= 0) return;
-    fetch(`/cuentas/consignar?idCuenta=${id}&valor=${valor}`, { method: "POST" })
-        .then(() => cargarCuentas());
-}
-
-function avance(id) {
-    const valor = prompt("Valor del avance ($):");
-    if (!valor || isNaN(valor) || Number(valor) <= 0) return;
-    fetch(`/cuentas/retirar?idCuenta=${id}&valor=${valor}`, { method: "POST" })
-        .then(() => cargarCuentas());
+    const response = await fetch("/clientes/cuentas");
+    if (!response.ok) { alert("No se pudieron cargar tus cuentas"); return; }
+    const cuentas = (await response.json()).filter(c => c.tipo === "DEBITO");
+    const numero = prompt(`Número de cuenta débito de origen: ${cuentas.map(c => c.numeroCuenta).join(", ")}`);
+    const origen = cuentas.find(c => String(c.numeroCuenta) === String(numero || "").trim());
+    if (!origen) { alert("Selecciona una cuenta débito válida"); return; }
+    const params = new URLSearchParams({idCuentaCredito: String(id), idCuentaOrigen: String(origen.id), valor});
+    const pago = await fetch(`/cuentas/pagar-tarjeta?${params}`, {method: "POST"});
+    if (!pago.ok) { alert("No fue posible pagar la tarjeta"); return; }
+    cargarCuentas();
 }
 
 function cambiarTarjeta(id) {

@@ -5,6 +5,7 @@ import co.edu.konradlorenz.service.BeneficiarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/beneficiarios")
@@ -12,19 +13,21 @@ public class BeneficiarioController {
     @Autowired private BeneficiarioService beneficiarioService;
 
     @PostMapping
-    public Beneficiario agregar(@RequestParam String usuario, @RequestParam String nombre,
+    public Beneficiario agregar(@RequestParam String nombre,
                                 @RequestParam String numeroCuenta, @RequestParam String banco,
-                                @RequestParam String alias) {
-        return beneficiarioService.agregar(usuario, nombre, numeroCuenta, banco, alias);
+                                @RequestParam String alias, HttpSession session) {
+        return beneficiarioService.agregar(usuario(session), nombre, numeroCuenta, banco, alias);
     }
 
     @GetMapping
-    public List<Beneficiario> listar(@RequestParam String usuario) {
-        return beneficiarioService.listar(usuario);
+    public List<Beneficiario> listar(HttpSession session) {
+        return beneficiarioService.listar(usuario(session));
     }
 
     @DeleteMapping("/{id}")
-    public void eliminar(@PathVariable Integer id) {
-        beneficiarioService.eliminar(id);
+    public void eliminar(@PathVariable Integer id, HttpSession session) {
+        beneficiarioService.eliminar(usuario(session), id);
     }
+
+    private String usuario(HttpSession session) { return (String) session.getAttribute("usuario"); }
 }

@@ -89,10 +89,16 @@ if (-not (Test-Path -Path $MAVEN_M2_PATH)) {
 }
 
 $MAVEN_WRAPPER_DISTS = $null
-if ((Get-Item $MAVEN_M2_PATH).Target[0] -eq $null) {
+$MAVEN_M2_TARGET = $null
+try {
+  $MAVEN_M2_TARGET = (Get-Item -LiteralPath $MAVEN_M2_PATH).Target
+} catch {
+  # A regular directory has no symlink target.
+}
+if ($null -eq $MAVEN_M2_TARGET -or @($MAVEN_M2_TARGET).Count -eq 0 -or [string]::IsNullOrWhiteSpace([string]@($MAVEN_M2_TARGET)[0])) {
   $MAVEN_WRAPPER_DISTS = "$MAVEN_M2_PATH/wrapper/dists"
 } else {
-  $MAVEN_WRAPPER_DISTS = (Get-Item $MAVEN_M2_PATH).Target[0] + "/wrapper/dists"
+  $MAVEN_WRAPPER_DISTS = [string]@($MAVEN_M2_TARGET)[0] + "/wrapper/dists"
 }
 
 $MAVEN_HOME_PARENT = "$MAVEN_WRAPPER_DISTS/$distributionUrlNameMain"

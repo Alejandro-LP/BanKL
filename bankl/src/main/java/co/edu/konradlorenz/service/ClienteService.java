@@ -29,6 +29,9 @@ public class ClienteService {
     @Autowired
     private CuentaRepository cuentaRepository;
 
+    @Autowired
+    private OwnershipGuard ownershipGuard;
+
     @Transactional
     public ClienteNatural registrarCliente(ClienteNatural cliente) {
 
@@ -118,8 +121,7 @@ public class ClienteService {
     }
 
     public List<Cuenta> obtenerCuentas(String usuarioIS) {
-        Cliente cliente = clienteRepository.findByUsuarioIS(usuarioIS);
-        if (cliente == null) return List.of();
+        Cliente cliente = ownershipGuard.requireCustomer(usuarioIS);
         return cuentaRepository.findByClienteIdDB(cliente.getIdDB());
     }
 }
