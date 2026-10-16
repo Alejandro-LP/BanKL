@@ -1767,6 +1767,62 @@ body:not(.dark) .dashboard-page .dashboard-footer,
 body:not(.dark) .currencies-page .history-table th { color:#53645b; }
 body:not(.dark) .landing-page .section-heading .eyebrow,
 body:not(.dark) .subpage-heading .inicio-eyebrow { color:#53634f; }
+
+/* Refreshed light palette: crisp sage surfaces with deep green and lime accents. */
+body:not(.dark) {
+  --bg:#f3f6f1;
+  --card:#ffffff;
+  --text:#17372d;
+  --muted:#52675b;
+  --header:rgba(243,246,241,.96);
+  --primary:#1d5140;
+  --secondary:#b9dd62;
+  --line:#dce5da;
+  --shadow:0 16px 44px rgba(27,62,47,.09);
+}
+body:not(.dark) .landing-page,
+body:not(.dark) .landing-page .site-header,
+body:not(.dark) .auth-page .auth-header { background:#f3f6f1; }
+body:not(.dark) .landing-page .experience-section { background:#e8eee4; }
+body:not(.dark) .landing-page .hero-copy .eyebrow,
+body:not(.dark) .landing-page .section-heading .eyebrow,
+body:not(.dark) .auth-page .auth-card .eyebrow,
+body:not(.dark) .dashboard-page .sidebar-caption,
+body:not(.dark) .subpage-heading .inicio-eyebrow { color:#52675b; }
+body:not(.dark) .landing-page .hero-copy h1 em { color:#557d35; }
+body:not(.dark) .landing-page .hero-description,
+body:not(.dark) .auth-page .auth-card .auth-intro,
+body:not(.dark) .auth-page .auth-switch,
+body:not(.dark) .auth-page .privacy-note,
+body:not(.dark) .dashboard-page .dashboard-footer,
+body:not(.dark) .currencies-page .history-table th { color:#52675b; }
+body:not(.dark) .dashboard-page .tab-btn.active { color:#173f32; background:#e5eee1; }
+body:not(.dark) .dashboard-page .tab-btn:hover { color:#173f32; background:#edf3e9; }
+body:not(.dark) .dashboard-page .tab-btn > span:first-child { color:#52734f; }
+body:not(.dark) .admin-page .admin-total { border-color:#d5e1d1; background:#eaf1e6; }
+body:not(.dark) .admin-page .admin-total strong { color:#173f32; }
+body:not(.dark) .admin-page .admin-total span { color:#52675b; }
+body:not(.dark) .auth-page .auth-card input,
+body:not(.dark) .login-card input,
+body:not(.dark) .login-card select { background:#fff; }
+body:not(.dark) .button-dark,
+body:not(.dark) .dashboard-page .btn-accion,
+body:not(.dark) .dashboard-page .inicio-cta,
+body:not(.dark) .bank-subpage .secondary-btn { background:#1d5140!important; border-color:#1d5140!important; }
+body:not(.dark) .button-lime { color:#17372d!important; background:#b9dd62!important; }
+body:not(.dark) .button-dark:hover { background:#28644e!important; }
+body:not(.dark) .landing-page .hero-art,
+body:not(.dark) .landing-page .closing-band,
+body:not(.dark) .auth-page .auth-aside,
+body:not(.dark) .dashboard-page .bienvenida-card,
+body:not(.dark) .dashboard-page .resumen-card.resumen-debito,
+body:not(.dark) .dashboard-page .inicio-cta,
+body:not(.dark) .bank-subpage .tarjeta-bancaria { background-color:#1d5140; }
+body:not(.dark) .landing-page .closing-band,
+body:not(.dark) .auth-page .auth-aside { background-image:radial-gradient(ellipse at 83% 120%,rgba(185,221,98,.12),transparent 40%),linear-gradient(125deg,#173f32,#28634d); }
+body:not(.dark) .landing-page .art-sun,
+body:not(.dark) .landing-page .note-dot { background:#b9dd62; }
+body:not(.dark) .landing-page .art-card { color:#17372d; background:#f3f6f1; }
 @media(max-width:900px) {
   .landing-page .landing-hero { min-height:0; grid-template-columns:1fr 1fr; gap:34px; padding:55px 6vw 66px; }
   .landing-page .hero-copy h1 { font-size:clamp(58px,8vw,82px); }
