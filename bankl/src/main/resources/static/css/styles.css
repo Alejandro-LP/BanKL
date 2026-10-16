@@ -1862,6 +1862,7 @@ body.dark .auth-card .recovery-note { color:#a1afa6; }
 .dashboard-page:not(.dark) .btn-accion:hover { background:#28644e!important; box-shadow:0 8px 20px rgba(29,81,64,.16)!important; }
 .dashboard-page:not(.dark) .inicio-cta span { color:#dceeb4; }
 .dashboard-page:not(.dark) .resumen-card.resumen-debito { border-color:#1d5140!important; background:linear-gradient(135deg,#173f32,#28634d); }
+.dashboard-page:not(.dark) .resumen-card.resumen-debito .valor { color:#fff!important; }
 .dashboard-page:not(.dark) .dashboard-header > div:last-child button,
 .dashboard-page:not(.dark) .dashboard-header .noti-btn { border-color:var(--line)!important; color:var(--text)!important; }
 @media(max-width:900px) {
