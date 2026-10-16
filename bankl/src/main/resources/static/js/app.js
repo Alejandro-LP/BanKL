@@ -6,6 +6,14 @@ function mostrarMensaje(id, msg, tipo) {
     div.className = `feedback ${tipo === "error" ? "feedback-error" : "feedback-success"}`;
 }
 
+function toggleRecovery() {
+    const panel = document.getElementById("recuperacion");
+    const toggle = document.querySelector(".recovery-toggle");
+    if (!panel || !toggle) return;
+    panel.hidden = !panel.hidden;
+    toggle.setAttribute("aria-expanded", String(!panel.hidden));
+}
+
 
 async function login() {
     const usuario = document.getElementById("usuario").value.trim();

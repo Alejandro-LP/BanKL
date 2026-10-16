@@ -31,6 +31,16 @@
         <label for="pin">PIN de seguridad</label>
         <input type="password" id="pin" placeholder="••••" inputmode="numeric" maxlength="6" autocomplete="one-time-code">
         <div class="auth-submit"><button class="button button-dark" onclick="login()">Ingresar <span>↗</span></button></div>
+        <button class="recovery-toggle" type="button" aria-expanded="false" aria-controls="recuperacion" onclick="toggleRecovery()">¿Olvidaste tu usuario, contraseña o PIN?</button>
+        <section class="recovery-panel" id="recuperacion" hidden>
+            <h3>Recupera el acceso</h3>
+            <p>Para proteger tu cuenta, la recuperación de usuario, contraseña o PIN requiere validar tu identidad con el equipo de soporte BanKL.</p>
+            <ul>
+                <li><strong>Usuario:</strong> solicita que te lo recuerden tras validar tu identidad.</li>
+                <li><strong>Contraseña o PIN:</strong> pide un restablecimiento seguro; nunca compartas tus claves actuales.</li>
+            </ul>
+            <p class="recovery-note">No envíes tu contraseña ni tu PIN por correo o mensaje.</p>
+        </section>
         <p id="resultado" role="status" aria-live="polite"></p>
         <p class="auth-switch">¿Primera vez por aquí? <a class="link" href="registro.html">Crea tu cuenta</a></p>
         <div class="privacy-note"><span>✳</span> Un espacio privado, pensado para ti.</div>
