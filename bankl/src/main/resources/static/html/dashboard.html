@@ -27,13 +27,18 @@
     <a class="brand sidebar-brand" href="index.html" aria-label="BanKL, inicio"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 3 35 11.5v17L20 37 5 28.5v-17L20 3Z"/><path d="M14 27V13h4v5l5-5h5l-6 6 6 8h-5l-4-5-1 1v4h-4Z"/></svg></span><span class="brand-word">Ban<b>KL</b></span></a>
     <span class="sidebar-caption">TU ESPACIO</span>
     <nav class="tabs" aria-label="Secciones de tu cuenta">
-        <button class="tab-btn active" id="btn-inicio" data-tab="inicio" onclick="irTab('inicio')"><span>⌂</span> Inicio</button>
-        <button class="tab-btn" id="btn-tarjetas" data-tab="tarjetas" onclick="irTab('tarjetas')"><span>▤</span> Tarjetas</button>
-        <button class="tab-btn" id="btn-transferencias" data-tab="transferencias" onclick="irTab('transferencias')"><span>⇄</span> Transferencias</button>
-        <button class="tab-btn" id="btn-beneficiarios" data-tab="beneficiarios" onclick="irTab('beneficiarios')"><span>♧</span> Beneficiarios</button>
-        <button class="tab-btn" id="btn-prestamos" data-tab="prestamos" onclick="irTab('prestamos')"><span>⌁</span> Préstamos</button>
-        <button class="tab-btn" id="btn-inversiones" data-tab="inversiones" onclick="irTab('inversiones')"><span>◈</span> Inversiones</button>
-        <button class="tab-btn" id="btn-notificaciones" data-tab="notificaciones" onclick="irTab('notificaciones')"><span>◉</span> Notificaciones <span id="sidebarBadge"></span></button>
+        <button class="tab-btn active" id="btn-inicio" data-tab="inicio" onclick="irTab('inicio')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>Dashboard</button>
+        <button class="tab-btn" id="btn-cuentas" data-tab="tarjetas" onclick="irTab('tarjetas')"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18m-14 5h4"/></svg>Cuentas y tarjetas</button>
+        <button class="tab-btn" id="btn-transferencias" data-tab="transferencias" onclick="irTab('transferencias')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4 4-4-4 4-4"/></svg>Transferencias</button>
+        <button class="tab-btn" id="btn-consignar" onclick="irOperacion('consignar')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18m-7-7 7 7 7-7M5 4h14"/></svg>Consignaciones</button>
+        <button class="tab-btn" id="btn-avance" onclick="irOperacion('avance')"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18m-7 5h3"/></svg>Avances</button>
+        <span class="sidebar-caption sidebar-group-label">PRODUCTOS</span>
+        <button class="tab-btn" id="btn-beneficiarios" data-tab="beneficiarios" onclick="irTab('beneficiarios')"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0m2-13h5m-2.5-2.5v5"/></svg>Beneficiarios</button>
+        <button class="tab-btn" id="btn-prestamos" data-tab="prestamos" onclick="irTab('prestamos')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5m0 14h16M7 15l4-4 3 2 5-6"/></svg>Préstamos</button>
+        <button class="tab-btn" id="btn-inversiones" data-tab="inversiones" onclick="irTab('inversiones')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17 9 11l4 4 8-9m-6 0h6v6"/></svg>Inversiones</button>
+        <button class="tab-btn" id="btn-notificaciones" data-tab="notificaciones" onclick="irTab('notificaciones')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9m-8 12h4"/></svg>Notificaciones <span id="sidebarBadge"></span></button>
+        <span class="sidebar-caption sidebar-group-label">PREFERENCIAS</span>
+        <button class="tab-btn" id="btn-ajustes" data-tab="ajustes" onclick="irTab('ajustes')"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.6a8 8 0 0 1-1.5.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.6-1.4-2.4 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.4-2.4 1.7.6a8 8 0 0 1 1.5-.9l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.5.9l1.7-.6 1.4 2.4-1.4 1.1a7 7 0 0 1 0 1.8Z"/></svg>Ajustes</button>
     </nav>
     <div class="sidebar-bottom"><span class="sidebar-mark">✳</span><span>Tu dinero,<br>más claro.</span></div>
 </aside>
@@ -71,12 +76,41 @@
                 <button class="actividad-todas" onclick="irTab('notificaciones')">Ir a notificaciones <span>→</span></button>
             </section>
         </div>
+        <section class="inicio-panel transaction-panel">
+            <div class="inicio-panel-heading"><div><span class="inicio-eyebrow">ACTIVIDAD DE CUENTA</span><h2>Movimientos recientes</h2></div><span class="table-caption">Últimos 20 movimientos</span></div>
+            <div class="transaction-table-wrap"><table class="transaction-table"><thead><tr><th>Fecha</th><th>Descripción</th><th>Cuenta</th><th>Tipo</th><th class="amount-cell">Monto</th></tr></thead><tbody id="tablaMovimientos"><tr><td colspan="5" class="table-empty">Cargando movimientos…</td></tr></tbody></table></div>
+        </section>
     </div>
 </div>
 <!-- TARJETAS -->
 <div class="tab-content" id="tab-tarjetas" data-page="tarjetas">
     <div class="page-heading"><span class="inicio-eyebrow">TUS PRODUCTOS</span><h1 class="section-title">Mis tarjetas</h1><p>Consulta tus tarjetas, saldos y acciones disponibles. Los retiros y transferencias requieren saldo conciliado con movimientos registrados.</p></div>
     <div id="contenedorCuentasDash"><p class="empty">Preparando tu espacio…</p></div>
+    <div class="form-grid operaciones-grid">
+        <section class="form-card" id="consignacionPanel">
+            <h3>Consignar dinero</h3>
+            <p>Consignación simulada para el prototipo educativo; el saldo se acredita de inmediato.</p>
+            <label for="cuentaConsignacion">Cuenta destino</label>
+            <select id="cuentaConsignacion"><option value="">Selecciona una cuenta débito</option></select>
+            <label for="montoConsignacion">Monto</label>
+            <input id="montoConsignacion" type="number" min="0.01" max="1000000000" step="0.01" inputmode="decimal" placeholder="0,00">
+            <button class="btn-accion btn-ingresar" type="button" onclick="consignarDinero()">Consignar</button>
+            <p id="resultadoConsignacion" class="form-feedback" role="status" aria-live="polite"></p>
+        </section>
+        <section class="form-card" id="avancePanel">
+            <h3>Avance de tarjeta</h3>
+            <p>El abono es inmediato. Se cargan comisión y el interés de los primeros 30 días al cupo; la tasa y comisión vigentes se informan en el resultado.</p>
+            <label for="tarjetaAvance">Tarjeta de crédito</label>
+            <select id="tarjetaAvance"><option value="">Selecciona una tarjeta de crédito</option></select>
+            <label for="cuentaDestinoAvance">Cuenta débito destino</label>
+            <select id="cuentaDestinoAvance"><option value="">Selecciona una cuenta débito</option></select>
+            <label for="montoAvance">Monto del avance</label>
+            <input id="montoAvance" type="number" min="0.01" max="1000000000" step="0.01" inputmode="decimal" placeholder="0,00" oninput="previsualizarCostoAvance()">
+            <p id="resumenCostoAvance" class="form-feedback" aria-live="polite">Ingresa un monto para consultar el costo total.</p>
+            <button class="btn-accion btn-avance" type="button" onclick="solicitarAvance()">Solicitar avance</button>
+            <p id="resultadoAvance" class="form-feedback" role="status" aria-live="polite"></p>
+        </section>
+    </div>
 </div>
 
 <!-- PRÉSTAMOS -->
@@ -148,6 +182,12 @@
 <div class="tab-content" id="tab-notificaciones" data-page="notificaciones">
     <div class="page-heading"><span class="inicio-eyebrow">NOVEDADES DE TU CUENTA</span><h1 class="section-title">Notificaciones</h1><p>Revisa tus avisos y mantente al día.</p></div>
     <div id="listaNoti"><p class="empty">Sin notificaciones</p></div>
+</div>
+
+<div class="tab-content" id="tab-ajustes" data-page="ajustes">
+    <div class="page-heading"><span class="inicio-eyebrow">PREFERENCIAS</span><h1 class="section-title">Ajustes</h1><p>Personaliza cómo ves tu espacio BanKL.</p></div>
+    <section class="form-card settings-card"><div><span class="settings-icon">◐</span><div><h3>Apariencia</h3><p>Elige el tema que prefieres para el dashboard.</p></div></div><button class="btn-accion" onclick="toggleDark()">Cambiar tema</button></section>
+    <section class="form-card settings-card"><div><span class="settings-icon">◎</span><div><h3>Tu sesión</h3><p id="ajustesUsuario">Sesión activa</p></div></div><button class="btn-accion btn-logout" onclick="cerrarSesion()">Cerrar sesión</button></section>
 </div>
 
 </main>

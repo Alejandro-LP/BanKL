@@ -175,6 +175,10 @@ El servidor inicia en: `http://localhost:8080`
 
 El dashboard del cliente mantiene una URL por apartado mediante el parametro `seccion`. Por ejemplo, ``/html/dashboard.html?seccion=tarjetas``. La navegacion se adapta al escritorio y al movil, y el historial del navegador permite regresar a la vista anterior.
 
+Las operaciones financieras escriben movimientos en el historial `transaccion` dentro de transacciones JPA. Antes de desplegar, aplica una vez `bankl/database/financial_operations.sql` sobre MySQL 8.0.16 o posterior para validar montos positivos e indexar el historial. Las consignaciones se acreditan de inmediato como movimientos simulados, apropiados para este prototipo educativo.
+
+La comisión y tasa mensual de avances son configurables con `BANKL_AVANCE_COMISION_PORCENTAJE`, `BANKL_AVANCE_COMISION_MINIMA` y `BANKL_AVANCE_TASA_MENSUAL`. Los valores predeterminados son demostrativos (3%, $5.000 y 2% mensual): el interés de los primeros 30 días se carga al desembolso. Sustitúyelos por las condiciones aprobadas por el banco antes de operar.
+
 ## API REST - Endpoints
 
 ### Clientes
@@ -188,6 +192,8 @@ El dashboard del cliente mantiene una URL por apartado mediante el parametro `se
 | Metodo | Endpoint | Descripcion |
 |---|---|---|
 | POST | `/cuentas/consignar` | Consignar dinero |
+| POST | `/cuentas/avance` | Desembolsar un avance de tarjeta a una cuenta débito propia |
+| GET | `/cuentas/movimientos` | Listar los últimos 20 movimientos de las cuentas propias |
 | POST | `/cuentas/retirar` | Retirar dinero |
 | POST | `/cuentas/cambiar` | Regenerar datos de tarjeta |
 
@@ -237,7 +243,8 @@ El dashboard del cliente mantiene una URL por apartado mediante el parametro `se
 - Registro con validacion completa y PIN automatico
 - Login con usuario, contrasena y PIN
 - Tarjeta debito y credito generadas automaticamente al registrarse
-- Consignaciones y retiros con validacion de fondos
+- Consignaciones simuladas inmediatas y retiros con validacion de fondos
+- Avances de tarjeta de credito con desembolso inmediato a cuenta debito; comision del 3% con minimo de $5.000 cargada al cupo disponible
 - Prestamos con calculo de cuota por interes compuesto
 - Inversiones CDT y ahorro programado con rendimiento calculado
 - Transferencias con acreditacion en tiempo real a la cuenta destino

@@ -1,8 +1,10 @@
 const usuario = localStorage.getItem("usuario");
 const nombre  = localStorage.getItem("nombre");
+let csrfTokenCuenta;
+let temporizadorCotizacionAvance;
 
 document.addEventListener("DOMContentLoaded", () => {
-    if (localStorage.getItem("bankl-theme") === "dark") document.body.classList.add("dark");
+    document.body.classList.toggle("dark", localStorage.getItem("bankl-theme") !== "light");
     if (!usuario || localStorage.getItem("tipo") !== "ClienteNatural") {
         window.location.href = "/html/Login.html";
         return;
@@ -11,6 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("bienvenida").textContent = "Bienvenido, " + nombre;
         document.getElementById("saludoNombre").textContent = "¡Bienvenido, " + nombre.split(" ")[0] + "!";
     }
+    const ajustesUsuario = document.getElementById("ajustesUsuario");
+    if (ajustesUsuario) ajustesUsuario.textContent = usuario || "Sesión activa";
     cargarNotificaciones();
     cargarSeccionDesdeUrl();
 });
@@ -28,7 +32,7 @@ function irTab(tab, updateHistory = true) {
     document.querySelectorAll(".tab-btn").forEach(boton => boton.classList.toggle("active", boton.dataset.tab === tab));
     if (updateHistory) history.pushState({ tab }, "", `?seccion=${encodeURIComponent(tab)}`);
 
-    if (tab === "tarjetas") cargarCuentasDash();
+    if (tab === "tarjetas") { cargarCuentasDash(); cargarCuentasOperaciones(); }
     if (tab === "prestamos") cargarPrestamos();
     if (tab === "inversiones") { cargarInversiones(); cargarCuentasOrigenInversion(); }
     if (tab === "beneficiarios") cargarBeneficiarios();
@@ -36,6 +40,14 @@ function irTab(tab, updateHistory = true) {
     if (tab === "notificaciones") cargarNotificaciones();
     if (tab === "inicio") cargarResumen();
     window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function irOperacion(tipo) {
+    irTab("tarjetas");
+    document.querySelectorAll(".tab-btn").forEach(boton => boton.classList.remove("active"));
+    document.getElementById(`btn-${tipo}`).classList.add("active");
+    const panel = document.getElementById(tipo === "consignar" ? "consignacionPanel" : "avancePanel");
+    setTimeout(() => panel.scrollIntoView({behavior: "smooth", block: "center"}), 80);
 }
 
 function cargarSeccionDesdeUrl() {
@@ -47,6 +59,7 @@ function cargarSeccionDesdeUrl() {
 window.addEventListener("popstate", cargarSeccionDesdeUrl);
 // ===== RESUMEN INICIO =====
 function cargarResumen() {
+    cargarMovimientos();
     fetch("/clientes/cuentas")
         .then(r => r.json())
         .then(cuentas => {
@@ -72,6 +85,27 @@ function cargarResumen() {
             const activos = data.filter(p=>p.estado==="ACTIVO").length;
             document.getElementById("resumenPrestamos").textContent = activos + " activo(s)";
         }).catch(()=>{});
+}
+
+function cargarMovimientos() {
+    const tabla = document.getElementById("tablaMovimientos");
+    if (!tabla) return;
+    fetch("/cuentas/movimientos")
+        .then(response => { if (!response.ok) throw new Error("No se pudieron cargar los movimientos"); return response.json(); })
+        .then(movimientos => {
+            if (!movimientos.length) {
+                tabla.innerHTML = '<tr><td colspan="5" class="table-empty">Aún no tienes movimientos registrados.</td></tr>';
+                return;
+            }
+            tabla.innerHTML = movimientos.map(movimiento => {
+                const entrada = movimiento.tipo.startsWith("ENTRADA:") || movimiento.tipo === "ABONO_TARJETA";
+                const descripcion = movimiento.tipo.replace(/[:_]/g, " ").toLocaleLowerCase("es").replace(/^./, letra => letra.toLocaleUpperCase("es"));
+                const fecha = new Date(movimiento.fecha).toLocaleString("es-CO", {day:"2-digit", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit"});
+                const signo = entrada ? "+" : "−";
+                return `<tr><td class="date-cell">${escapeHtml(fecha)}</td><td><span class="movement-name">${escapeHtml(descripcion)}</span></td><td>••${String(movimiento.numeroCuenta).slice(-4)}</td><td><span class="movement-type">${escapeHtml(movimiento.tipoCuenta)}</span></td><td class="amount-cell ${entrada ? "amount-positive" : "amount-negative"}">${signo}$${Number(movimiento.valor).toLocaleString("es-CO", {minimumFractionDigits:2, maximumFractionDigits:2})}</td></tr>`;
+            }).join("");
+        })
+        .catch(() => { tabla.innerHTML = '<tr><td colspan="5" class="table-empty">No fue posible cargar los movimientos.</td></tr>'; });
 }
 
 // ===== TARJETAS =====
@@ -127,6 +161,93 @@ function cargarCuentasDash() {
             document.getElementById("contenedorCuentasDash").innerHTML =
                 "<p class='empty' style='color:red'>Error cargando tarjetas ️</p>";
         });
+}
+
+function cargarCuentasOperaciones() {
+    fetch("/clientes/cuentas")
+        .then(async response => {
+            if (!response.ok) throw new Error("No se pudieron cargar tus cuentas");
+            return response.json();
+        })
+        .then(cuentas => {
+            const debito = cuentas.filter(c => c.tipo === "DEBITO");
+            const credito = cuentas.filter(c => c.tipo === "CREDITO");
+            ["cuentaConsignacion", "cuentaDestinoAvance"].forEach(id => {
+                const select = document.getElementById(id);
+                select.replaceChildren(new Option("Selecciona una cuenta débito", ""));
+                debito.forEach(c => select.add(new Option(`Cuenta •${String(c.numeroCuenta).slice(-4)} | Saldo $${Number(c.saldo).toFixed(2)}`, String(c.id))));
+            });
+            const selectCredito = document.getElementById("tarjetaAvance");
+            selectCredito.replaceChildren(new Option("Selecciona una tarjeta de crédito", ""));
+            credito.forEach(c => selectCredito.add(new Option(`Crédito •${String(c.numeroCuenta).slice(-4)} | Disponible $${Number(c.disponible).toFixed(2)}`, String(c.id))));
+        })
+        .catch(error => mostrarResultadoOperacion("resultadoConsignacion", error.message, true));
+}
+
+async function enviarOperacionCuenta(path, fields) {
+    if (!csrfTokenCuenta) {
+        const tokenResponse = await fetch("/clientes/csrf");
+        if (!tokenResponse.ok) throw new Error("Sesión inválida. Inicia sesión de nuevo.");
+        csrfTokenCuenta = (await tokenResponse.json()).token;
+    }
+    const response = await fetch(path, {method: "POST", headers: {"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8", "X-CSRF-TOKEN": csrfTokenCuenta}, body: new URLSearchParams(fields)});
+    const payload = await response.json().catch(() => null);
+    if (!response.ok) throw new Error(payload?.detail || payload?.error || "No se pudo completar la operación");
+    return payload;
+}
+
+function mostrarResultadoOperacion(id, mensaje, error = false) {
+    const el = document.getElementById(id);
+    el.textContent = mensaje;
+    el.classList.toggle("error", error);
+}
+
+function previsualizarCostoAvance() {
+    clearTimeout(temporizadorCotizacionAvance);
+    const input = document.getElementById("montoAvance");
+    const valor = input.value;
+    if (!valor || !/^\d+(\.\d{1,2})?$/.test(valor) || Number(valor) <= 0 || Number(valor) > 1000000000) {
+        mostrarResultadoOperacion("resumenCostoAvance", "Ingresa un monto válido para consultar el costo.", true); return;
+    }
+    temporizadorCotizacionAvance = setTimeout(async () => {
+        try {
+            const response = await fetch(`/cuentas/avance/costos?valor=${encodeURIComponent(valor)}`);
+            const costos = await response.json();
+            if (!response.ok) throw new Error(costos.detail || "No fue posible calcular el costo");
+            mostrarResultadoOperacion("resumenCostoAvance", `Comisión ${Number(costos.comisionPorcentaje).toFixed(2)}% (mín. $${Number(costos.comisionMinima).toFixed(2)}): $${Number(costos.comision).toFixed(2)} · Interés ${Number(costos.tasaMensualPorcentaje).toFixed(2)}% mensual por 30 días: $${Number(costos.interes30Dias).toFixed(2)} · Cargo al cupo: $${Number(costos.cargoTotal).toFixed(2)}`);
+        } catch (error) { mostrarResultadoOperacion("resumenCostoAvance", error.message, true); }
+    }, 250);
+}
+
+async function consignarDinero() {
+    const idCuenta = document.getElementById("cuentaConsignacion").value;
+    const valor = document.getElementById("montoConsignacion").value;
+    if (!idCuenta || !valor || Number(valor) <= 0 || Number(valor) > 1000000000 || !Number.isFinite(Number(valor)) || !/^\d+(\.\d{1,2})?$/.test(valor)) {
+        mostrarResultadoOperacion("resultadoConsignacion", "Selecciona la cuenta e ingresa un monto válido.", true); return;
+    }
+    try {
+        await enviarOperacionCuenta("/cuentas/consignar", {idCuenta, valor});
+        document.getElementById("montoConsignacion").value = "";
+        mostrarResultadoOperacion("resultadoConsignacion", "Consignación simulada acreditada de inmediato.");
+        cargarCuentasDash(); cargarCuentasOperaciones(); cargarNotificaciones();
+        cargarMovimientos(); cargarResumen();
+    } catch (error) { mostrarResultadoOperacion("resultadoConsignacion", error.message, true); }
+}
+
+async function solicitarAvance() {
+    const idCuentaCredito = document.getElementById("tarjetaAvance").value;
+    const idCuentaDestino = document.getElementById("cuentaDestinoAvance").value;
+    const valor = document.getElementById("montoAvance").value;
+    if (!idCuentaCredito || !idCuentaDestino || !valor || Number(valor) <= 0 || Number(valor) > 1000000000 || !Number.isFinite(Number(valor)) || !/^\d+(\.\d{1,2})?$/.test(valor)) {
+        mostrarResultadoOperacion("resultadoAvance", "Selecciona ambas cuentas e ingresa un monto válido.", true); return;
+    }
+    try {
+        const result = await enviarOperacionCuenta("/cuentas/avance", {idCuentaCredito, idCuentaDestino, valor});
+        document.getElementById("montoAvance").value = "";
+        mostrarResultadoOperacion("resultadoAvance", `Abonado. Comisión: $${Number(result.comision).toFixed(2)}. Interés de 30 días: $${Number(result.interes30Dias).toFixed(2)}. Cargo total al cupo: $${Number(result.cargoTotal).toFixed(2)}.`);
+        cargarCuentasDash(); cargarCuentasOperaciones(); cargarNotificaciones();
+        cargarMovimientos(); cargarResumen();
+    } catch (error) { mostrarResultadoOperacion("resultadoAvance", error.message, true); }
 }
 
 function retirarCuenta(id) {
@@ -383,7 +504,7 @@ function realizarTransferencia() {
     fetch(`/transferencias?${params}`,{method:"POST"})
         .then(r=>r.json())
         .then(t=>{
-            cargarTransferencias();cargarNotificaciones();
+            cargarTransferencias();cargarNotificaciones();cargarMovimientos();
             alert(t.estado==="EXITOSA"?"Transferencia exitosa":"Fondos insuficientes");
         });
 }

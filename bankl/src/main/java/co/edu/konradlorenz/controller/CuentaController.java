@@ -4,6 +4,9 @@ import co.edu.konradlorenz.service.CuentaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/cuentas")
@@ -14,7 +17,27 @@ public class CuentaController {
 
     @PostMapping("/consignar")
     public String consignar(@RequestParam Integer idCuenta, @RequestParam double valor, HttpSession session) {
-        return cuentaService.consignar(usuario(session), idCuenta, valor) ? "OK" : "Error";
+        if (usuario(session) == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Inicia sesión para continuar");
+        cuentaService.consignar(usuario(session), idCuenta, valor);
+        return "Consignación simulada registrada";
+    }
+
+    @GetMapping("/movimientos")
+    public List<CuentaService.MovimientoView> movimientos(HttpSession session) {
+        return cuentaService.listarMovimientos(usuario(session));
+    }
+
+    @PostMapping("/avance")
+    public CuentaService.AvanceResult solicitarAvance(@RequestParam Integer idCuentaCredito,
+            @RequestParam Integer idCuentaDestino, @RequestParam double valor, HttpSession session) {
+        if (usuario(session) == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Inicia sesión para continuar");
+        return cuentaService.solicitarAvance(usuario(session), idCuentaCredito, idCuentaDestino, valor);
+    }
+
+    @GetMapping("/avance/costos")
+    public CuentaService.AvanceCostos cotizarAvance(@RequestParam double valor, HttpSession session) {
+        if (usuario(session) == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Inicia sesión para continuar");
+        return cuentaService.cotizarAvance(valor);
     }
 
     @PostMapping("/pagar-tarjeta")

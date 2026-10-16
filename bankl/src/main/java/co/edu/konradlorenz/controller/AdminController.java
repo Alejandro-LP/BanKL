@@ -19,6 +19,7 @@ public class AdminController {
     @Autowired
     private ClienteRepository clienteRepository;
 
+
     @GetMapping("/clientes")
     public List<ClienteNatural> obtenerClientesNaturales() {
         return clienteNaturalRepository.findAll();

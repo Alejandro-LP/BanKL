@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/clientes")
@@ -48,5 +49,15 @@ public class ClienteController {
     @GetMapping("/cuentas")
     public List<Cuenta> obtenerCuentas(HttpSession session) {
         return clienteService.obtenerCuentas((String) session.getAttribute("usuario"));
+    }
+
+    @GetMapping("/csrf")
+    public java.util.Map<String, String> csrf(HttpSession session) {
+        String token = (String) session.getAttribute("csrfToken");
+        if (token == null) {
+            token = UUID.randomUUID().toString();
+            session.setAttribute("csrfToken", token);
+        }
+        return java.util.Map.of("token", token);
     }
 }

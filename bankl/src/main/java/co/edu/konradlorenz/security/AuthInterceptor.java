@@ -22,6 +22,18 @@ public class AuthInterceptor implements HandlerInterceptor {
             return true;
         }
         if ("ClienteAdmin".equals(role) && !path.equals("/clientes/logout")) { res.sendError(403); return false; }
+        boolean financialPost = req.getMethod().equals("POST") &&
+            (path.equals("/cuentas/consignar") || path.equals("/cuentas/avance"));
+        if (financialPost) {
+            String expected = (String) session.getAttribute("csrfToken");
+            String supplied = req.getHeader("X-CSRF-TOKEN");
+            if (expected == null || supplied == null || !java.security.MessageDigest.isEqual(
+                    expected.getBytes(java.nio.charset.StandardCharsets.UTF_8),
+                    supplied.getBytes(java.nio.charset.StandardCharsets.UTF_8))) {
+                res.sendError(403, "Token CSRF inválido"); return false;
+            }
+        }
         return true;
     }
+
 }
